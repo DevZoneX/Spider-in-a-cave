@@ -28,6 +28,8 @@ public:
 
     float quadraticWeight = 1.0;
 
+    timer_basic timer;
+
 
     float r=0.4f; // Cave radius horizontal
     float def_r=1.3f; // Cave deformation

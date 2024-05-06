@@ -14,11 +14,11 @@
 // Inputs coming from the vertex shader
 in struct fragment_data
 {
-    vec3 position; // position in the world space
-    vec3 normal;   // normal in the world space
-    vec3 color;    // current color on the fragment
-    vec2 uv;       // current uv-texture on the fragment
-
+    vec3 position; // vertex position in world space
+    vec3 normal;   // normal position in world space
+    mat3 TBN;	   // TBN matrix
+    vec3 color;    // vertex color
+    vec2 uv;       // vertex uv
 } fragment;
 
 // Output of the fragment shader - output color
@@ -51,6 +51,8 @@ struct texture_settings_structure {
 	bool two_sided;         // Display a two-sided illuminated surface (doesn't work on Mac)
 };
 
+
+
 // Material of the mesh (using a Phong model)
 struct material_structure
 {
@@ -64,9 +66,6 @@ struct material_structure
 uniform material_structure material;
 
 
- vec3 qtransform( vec4 q, vec3 v ){
-	return v + 2.0*cross(cross(v, q.xyz ) + q.w*v, q.xyz);
-	} 
 
 void main()
 {
@@ -75,8 +74,7 @@ void main()
 	vec3 last_col = vec3(view*vec4(0.0, 0.0, 0.0, 1.0)); // get the last column
 	vec3 camera_position = -O*last_col;
 
-	vec3 v1 = vec3(0,0,1);
-	vec3 v2 = fragment.normal;
+	
 
 	
 
@@ -87,12 +85,15 @@ void main()
 		uv_image.y = 1.0-uv_image.y;
 	}
 	// Get the second texture color
-	vec4 color_image_texture_2 = texture(image_texture_2, uv_image);
+	vec3 color_image_texture_2 = texture(image_texture_2, uv_image).rgb;
+	color_image_texture_2 = normalize(color_image_texture_2 * 2.0 - 1.0);
+
 
 
 	// Renormalize normal
 
 	vec3 N = normalize(fragment.normal);
+	N = normalize(fragment.TBN * color_image_texture_2);
 	//normalize(N+0.1*qtransform(q,vec3(2*color_image_texture_2.x-0.5,2*color_image_texture_2.y-0.5,color_image_texture_2.z*0+1)));
 
 	// Inverse the normal if it is viewed from its back (two-sided surface)
@@ -100,13 +101,7 @@ void main()
 	if (material.texture_settings.two_sided && gl_FrontFacing == false) {
 		N = -N;
 	}
-	vec4 q = vec4(0,0,0,0);
 	
-	vec3 a = cross(v1, v2);
-	q.xyz = a;
-	q.w = sqrt(pow(length(v1),2) * pow(length(v2),2)) + dot(v1, v2);
-	q = normalize(q);
-	N = normalize(N+0.3*qtransform(q,vec3(2*color_image_texture_2.x-0.5,2*color_image_texture_2.y-0.5,color_image_texture_2.z)));
 
 	// Phong coefficient (diffuse, specular)
 	// *************************************** //

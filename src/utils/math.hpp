@@ -48,6 +48,12 @@ namespace math{
     
     void draw(segment segment,environment_structure environment);
     void draw(parallelogram parallelogram,environment_structure environment);
+
+
+    vec3 calculate_tangent(const vec3& position1, const vec3& position2, const vec3& position3,
+                      const vec2& texCoord1, const vec2& texCoord2, const vec2& texCoord3,
+                      const vec3& normal1);
+    vec3 calculate_bitangent(const vec3& tangent, const vec3& normal);
 }
 
 #endif // MATH_HPP

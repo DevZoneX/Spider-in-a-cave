@@ -188,3 +188,31 @@ void math::draw(parallelogram parallelogram, environment_structure environment)
     math_draw_curve.vbo_position.update(positions);
     cgp::draw(math_draw_curve, environment);
 }
+
+
+
+vec3 math::calculate_tangent(const vec3& position1, const vec3& position2, const vec3& position3,
+                      const vec2& texCoord1, const vec2& texCoord2, const vec2& texCoord3,
+                      const vec3& normal1) {
+    vec3 edge1 = position2 - position1;
+    vec3 edge2 = position3 - position1;
+    vec2 deltaUV1 = texCoord2 - texCoord1;
+    vec2 deltaUV2 = texCoord3 - texCoord1;
+
+    float f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
+
+    vec3 tangent;
+    tangent.x = f * (deltaUV2.y * edge1.x - deltaUV1.y * edge2.x);
+    tangent.y = f * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y);
+    tangent.z = f * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z);
+
+    // Gram-Schmidt orthogonalize the tangent
+    tangent = normalize(tangent - dot(tangent, normal1) * normal1);
+
+    return tangent;
+}
+
+vec3 math::calculate_bitangent(const vec3& tangent, const vec3& normal) {
+    // Calculate bitangent as cross product of tangent and normal
+    return normalize(cross(normal, tangent));
+}

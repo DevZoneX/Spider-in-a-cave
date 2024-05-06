@@ -49,10 +49,12 @@ void scene_structure::display_frame()
 {
 
 	// Set the light to the current position of the camera
-	environment.light = camera_control.camera_model.position();
+	environment.light = {0,0,0.5};//camera_control.camera_model.position();
 
 	// Update time
 	timer.update();
+
+    environment.uniform_generic.uniform_float["time"] = timer.t;
     debug_timer.update();
 
 	// conditional display of the global frame (set via the GUI)
