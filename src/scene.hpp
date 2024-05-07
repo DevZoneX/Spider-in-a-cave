@@ -28,6 +28,10 @@ struct gui_parameters {
     float spider_rotation_around_y = 0;
     float spider_rotation_around_z = 0;
 
+
+	bool is_cartoon = false;
+	int cartoon_levels = 7;
+
 };
 
 // The structure of the custom scene

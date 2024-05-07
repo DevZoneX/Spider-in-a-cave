@@ -53,6 +53,8 @@ void scene_structure::display_frame()
 	timer.update();
 
     environment.uniform_generic.uniform_float["time"] = timer.t;
+    environment.uniform_generic.uniform_int["is_cartoon"] = gui.is_cartoon ? 1 : 0;
+    environment.uniform_generic.uniform_int["cartoon_levels"] = gui.cartoon_levels;
     debug_timer.update();
 
 	// conditional display of the global frame (set via the GUI)
@@ -93,7 +95,13 @@ void scene_structure::display_gui()
 
     ImGui::ListBox("Scene",&gui.selected_scene,gui.listc,gui.num_scenes,2);
 
-    if(gui.selected_scene==1){
+	if(gui.selected_scene==0){
+        ImGui::Checkbox("Cartoon Shadering",&gui.is_cartoon);
+		if(gui.is_cartoon){
+        	ImGui::SliderInt("Cartoon levels",&gui.cartoon_levels,1,20);
+		}
+    }
+    else if(gui.selected_scene==1){
         testing_scene.display_gui();
     }
 
