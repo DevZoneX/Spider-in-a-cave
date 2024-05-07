@@ -3,7 +3,7 @@
 
 // Your function
 
-test_scene::~test_scene(){
+test_scene::~test_scene() {
     if(colsbox!=nullptr){
         delete colsbox;
     }
@@ -81,7 +81,7 @@ void test_scene::initialize(input_devices& inputs, window_structure& window){
     cpart = new collision_partition({2,2,2},{0,0,0});
 }
 
-void test_scene::display_frame(environment_structure &environment){
+void test_scene::display_frame(environment_structure &environment) {
     if(gui.selected_scene==0){
         Spider.set_rotation(rotation_transform::from_axis_angle({1,0,0},gui.spider_rotation_around_x) * rotation_transform::from_axis_angle({0,1,0},gui.spider_rotation_around_y) * rotation_transform::from_axis_angle({0,0,1},gui.spider_rotation_around_z));
         Spider.setLegPosition(spider::FrontRight,legs_positions.key_positions[0],false);

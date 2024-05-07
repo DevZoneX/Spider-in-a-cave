@@ -8,8 +8,6 @@ using namespace cgp;
 #include "subscene/test_scene.hpp"
 
 
-
-
 // This function is called only once at the beginning of the program
 // This function can contain any complex operation that can be pre-computed once
 void scene_structure::initialize()
@@ -67,8 +65,6 @@ void scene_structure::display_frame()
     else if(gui.selected_scene==1){
         testing_scene.display_frame(environment);
     }
-    
-	
 
 
 	if (gui.display_wireframe) {

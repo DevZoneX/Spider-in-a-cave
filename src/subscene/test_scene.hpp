@@ -15,7 +15,7 @@
 using namespace cgp;
 
 
-struct test_gui{
+struct test_gui {
 
     int selected_scene = 2;
     int num_scenes = 3;
@@ -33,12 +33,10 @@ struct test_gui{
 };
 
 
-class test_scene: public subscene{
+class test_scene: public subscene {
 public:
 
     test_gui gui;
-
-
 
     // Props
 

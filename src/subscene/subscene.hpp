@@ -12,7 +12,6 @@ public:
     camera_controller_first_person_euler camera_control;
 
 
-
     // Functions
     subscene(){};
     void initialize();
