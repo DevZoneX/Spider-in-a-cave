@@ -66,6 +66,7 @@ public:
 
     void initialize(){};
     void draw(environment_structure environment){if(environment.background_color.x){return;}};
+    virtual bool goes_collide(collision_object *col){if(col==NULL){return false;}return false;};
 };
 
 #endif // TOUCHABLE_OBJECT_HPP
