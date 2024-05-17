@@ -21,8 +21,8 @@ public:
 
     void initialize(collision_partition *_partition);
     bool is_partitionned() override {return partitionned;};
-    //bool does_collide(collision_object* col2, vec3 &collision_point);
-    //bool does_collide(collision_object* col2);
+    bool does_collide(collision_object* col2, vec3 &collision_point);
+    bool does_collide(collision_object* col2);
 };
 
 #endif // COLLISION_HANDLER_HPP

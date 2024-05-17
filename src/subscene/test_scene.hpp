@@ -8,6 +8,7 @@
 
 
 #include "../entities/spider.hpp"
+#include "../map/cave_mesh.hpp"
 #include "../utils/key_positions_structure.hpp"
 #include "../utils/collision_object.hpp"
 #include "../utils/collision_handler.hpp"
@@ -18,8 +19,8 @@ using namespace cgp;
 struct test_gui {
 
     int selected_scene = 2;
-    int num_scenes = 3;
-    const char* const listc[3] = {"Spider", "Colisions", "Partition and Terrain collision"};
+    int num_scenes = 4;
+    const char* const listc[4] = {"Spider", "Colisions", "Partition and collisions", "Terrain and collisions"};
 
 
     float spider_rotation_around_x = 0;
@@ -30,6 +31,7 @@ struct test_gui {
     bool show_partition = false;
     bool show_box_partition = false;
     bool show_triangle_partition = false;
+    bool show_cave = true;
 };
 
 
@@ -44,6 +46,7 @@ public:
     keyframe_structure legs_positions;
     keyframe_structure col_positions;
     keyframe_structure col_positions_partition;
+    keyframe_structure col_positions_scene3;
     spider Spider;
     collision_sphere* colsphere;
     collision_sphere* colsphere2;
@@ -55,6 +58,7 @@ public:
 
     collision_partition *cpart;
     partition_coordinates C;
+    cave_mesh cave;
 
 
 

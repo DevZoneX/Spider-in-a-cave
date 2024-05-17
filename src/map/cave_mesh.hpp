@@ -3,16 +3,22 @@
 
 #include "cgp/cgp.hpp"
 #include "../environment.hpp"
+#include "../utils/collision_handler.hpp"
+#include "../utils/collision_object.hpp"
+#include "../utils/touchable_object.hpp"
 
-class cave_mesh
+class cave_mesh: public collision_handler
 {
 private:
     cgp::mesh cmesh;
     cgp::mesh_drawable cmeshd;
     cgp::mesh cmesh_ground;
     cgp::mesh_drawable cmeshd_ground;
+
+
 public:
     cave_mesh();
+    ~cave_mesh();
 
     static int const terrain_sample = 300;
     static int const arch_sample = 200;

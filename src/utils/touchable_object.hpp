@@ -42,17 +42,23 @@ public:
 
     bool which_partition(cgp::vec3 coords, partition_coordinates &C); // returns true if the coordinate is inside the terrain length
     std::vector<collision_object*> get_partition(partition_coordinates C);
+    std::vector<collision_object*> get_partition(int idx){
+        if(idx<0){return out_collisions;}
+        return collision_list_partition[idx];
+    }
 
     void add_collision(collision_object* col);
     vec3 get_partition_coordinates(partition_coordinates C);
     partition_coordinates get_out_coordinates();
     math::parallelogram get_partition_face(partition_coordinates C, math::cube_face face);
 
+   
+
     
     void draw(partition_coordinates C, environment_structure environment);
 };
 
-
+std::ostream& operator<<(std::ostream &strm,collision_partition &colpar);
 
 
 

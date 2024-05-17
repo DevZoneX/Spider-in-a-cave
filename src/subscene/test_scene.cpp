@@ -53,6 +53,10 @@ void test_scene::initialize(input_devices& inputs, window_structure& window){
     { {0,3,0}, {3,3,0}, {0,0,0}, {1,1,1}, {0,1,0}, {0.5,0,0.5} };
     col_positions_partition.initialize(key_positions_col_part);
 
+    numarray<vec3> key_positions_ray =
+    { {0,3,0}, {3,3,0} };
+    col_positions_scene3.initialize(key_positions_ray);
+
     Spider.initialize();
 
     debug_timer.t_periodic = 1;
@@ -79,6 +83,10 @@ void test_scene::initialize(input_devices& inputs, window_structure& window){
 
 
     cpart = new collision_partition({2,2,2},{0,0,0});
+
+
+
+    cave.initialize();
 }
 
 void test_scene::display_frame(environment_structure &environment) {
@@ -192,6 +200,22 @@ void test_scene::display_frame(environment_structure &environment) {
         coltri->draw(environment);
         col_positions_partition.display_key_positions(environment);
     }
+    else if(gui.selected_scene==3){
+        if(gui.show_cave){
+            cave.draw(environment);
+        }
+        colray->translation = col_positions_scene3.key_positions[0];
+        colray->director = col_positions_scene3.key_positions[1] - col_positions_scene3.key_positions[0];
+        colray->draw(environment);
+        col_positions_scene3.display_key_positions(environment);
+
+        vec3 temp;
+        if(cave.does_collide(colray,temp)){
+            sphere.model.translation = temp;
+            draw(sphere,environment);
+            std::cout << "Collision";
+        }
+    }
 }
 
 
@@ -228,6 +252,9 @@ void test_scene::display_gui(){
         ImGui::Checkbox("Show Box partition", &gui.show_box_partition);
         ImGui::Checkbox("Show Triangle partition", &gui.show_triangle_partition);
     }
+    else if(gui.selected_scene==3){
+        ImGui::Checkbox("Show Cave", &gui.show_cave);
+    }
 }
 
 void test_scene::mouse_move_event(environment_structure &environment,input_devices& inputs,camera_projection_perspective &_camera_projection){
@@ -242,6 +269,9 @@ void test_scene::mouse_move_event(environment_structure &environment,input_devic
     }
     else if(gui.selected_scene==2){
         col_positions_partition.update_picking(inputs, camera_control.camera_model, _camera_projection);
+    }
+    else if(gui.selected_scene==3){
+        col_positions_scene3.update_picking(inputs, camera_control.camera_model, _camera_projection);
     }
 }
 void test_scene::mouse_click_event(environment_structure &environment){

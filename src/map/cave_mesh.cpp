@@ -22,8 +22,14 @@ void cave_mesh::initialize(){
     cmeshd_ground.model.scaling_xyz = {1,length,1};
 
 
+
+    partition = new collision_partition({1.2,1.2,1.2});
+    collision_handler::initialize(partition);
+
+
     //cmeshd_ground.model.rotation = rotation_axis_angle({1,0,0},-Pi/2);
     update_terrain();
+    std::cout << *partition << std::endl;
 
 
     cmeshd.texture.load_and_initialize_texture_2d_on_gpu(project::path + "assets/rock_face_comp.png",
@@ -48,6 +54,11 @@ void cave_mesh::initialize(){
     cmeshd_ground.material.phong.specular_exponent = 10;
     cmeshd_ground.material.phong.diffuse *= 0.6;
 }
+
+cave_mesh::~cave_mesh(){
+    delete partition;
+}
+
 
 void cave_mesh::draw(environment_structure environment){
     cgp::draw(cmeshd,environment);
@@ -110,6 +121,39 @@ void cave_mesh::update_terrain()
             //cmesh_ground.position[idx].z = 0;
             tangents_ground.push_back({0,1,0});
             bitangents_ground.push_back({1,0,0});
+        }
+    }
+    for (int ku = 0; ku < N-1; ++ku) {
+        for (int kv = 0; kv < N-1; ++kv) {
+            int const idx = ku*N+kv;
+            int const idx2 = ku*N+kv+1;
+            int const idx3 = (ku+1)*N+kv;
+            int const idx4 = (ku+1)*N+kv+1;
+
+            vec3 pos1 = cmeshd.model.scaling*cmeshd.model.scaling_xyz*cmesh.position[idx]+cmeshd.model.translation;
+            vec3 pos2 = cmeshd.model.scaling*cmeshd.model.scaling_xyz*cmesh.position[idx2]+cmeshd.model.translation;
+            vec3 pos3 = cmeshd.model.scaling*cmeshd.model.scaling_xyz*cmesh.position[idx3]+cmeshd.model.translation;
+            vec3 pos4 = cmeshd.model.scaling*cmeshd.model.scaling_xyz*cmesh.position[idx4]+cmeshd.model.translation;
+
+            partition->add_collision(new collision_triangle(pos1,pos2-pos1,pos4-pos1));
+            partition->add_collision(new collision_triangle(pos1,pos3-pos1,pos4-pos1));
+        }
+    }
+
+    for (int ku = 0; ku < N_ground-1; ++ku) {
+        for (int kv = 0; kv < N_ground-1; ++kv) {
+            int const idx = ku*N_ground+kv;
+            int const idx2 = ku*N_ground+kv+1;
+            int const idx3 = (ku+1)*N_ground+kv;
+            int const idx4 = (ku+1)*N_ground+kv+1;
+
+            vec3 pos1 = cmeshd_ground.model.scaling*cmeshd_ground.model.scaling_xyz*cmesh_ground.position[idx]+cmeshd_ground.model.translation;
+            vec3 pos2 = cmeshd_ground.model.scaling*cmeshd_ground.model.scaling_xyz*cmesh_ground.position[idx2]+cmeshd_ground.model.translation;
+            vec3 pos3 = cmeshd_ground.model.scaling*cmeshd_ground.model.scaling_xyz*cmesh_ground.position[idx3]+cmeshd_ground.model.translation;
+            vec3 pos4 = cmeshd_ground.model.scaling*cmeshd_ground.model.scaling_xyz*cmesh_ground.position[idx4]+cmeshd_ground.model.translation;
+
+            partition->add_collision(new collision_triangle(pos1,pos2-pos1,pos4-pos1));
+            partition->add_collision(new collision_triangle(pos1,pos3-pos1,pos4-pos1));
         }
     }
 

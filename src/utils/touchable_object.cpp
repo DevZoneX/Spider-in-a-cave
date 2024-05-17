@@ -41,6 +41,7 @@ std::vector<collision_object*> collision_partition::get_partition(partition_coor
 }
 void collision_partition::add_collision(collision_object* col){
     numarray<partition_coordinates> Cs = col->get_boxes(this);
+    
     for(int i=0;i<Cs.size();i++){
         int x=Cs[i].x;
         int y=Cs[i].y;
@@ -98,6 +99,18 @@ touchable_object::~touchable_object(){
     if(c_boxes!=NULL){
         delete[] c_boxes;
     }
+}
+
+
+std::ostream& operator<<(std::ostream &strm,collision_partition &colpar) {
+        strm << "collision_partition(\n";
+        for(int i=0;i<8*colpar.get_N_x()*colpar.get_N_y()*colpar.get_N_z();i++){
+            if(colpar.get_partition(i).size()>0){
+                strm << i << ":" << colpar.get_partition(i).size()<<"\t";
+            }
+        }
+        strm << std::endl << "out:" << colpar.get_partition(-1).size() ;
+        return  strm << "\n)";
 }
 
 
