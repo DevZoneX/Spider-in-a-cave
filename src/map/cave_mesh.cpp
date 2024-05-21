@@ -29,7 +29,6 @@ void cave_mesh::initialize(){
 
     //cmeshd_ground.model.rotation = rotation_axis_angle({1,0,0},-Pi/2);
     update_terrain();
-    std::cout << *partition << std::endl;
 
 
     cmeshd.texture.load_and_initialize_texture_2d_on_gpu(project::path + "assets/rock_face_comp.png",

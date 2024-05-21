@@ -105,7 +105,6 @@ void fabric::calculate(cgp::vec3 start, cgp::vec3 target, cgp::rotation_transfor
             positions[j+1]=current;
             temp = positions[j+1]-positions[j];
             temp = normalize(temp);
-            //std::cout << "bone n:" << j << " length: " << lengths[j] << std::endl;
             current = positions[j+1]-temp*lengths[j];
         }
         positions[0]=current;
