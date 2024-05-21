@@ -43,7 +43,7 @@ void test_scene::initialize(input_devices& inputs, window_structure& window){
 
     
     numarray<vec3> key_positions =
-    { {0.647256,0.900676,-0.441647}, {0.652574,-0.942182,-0.469014}, {-0.263303,1,-0.516560}, {-0.263303,-1,-0.516560}, {0.138221,0.997489,-0.432094}, {0.138221,-1,-0.432094} };
+    { {0.647256,0.900676,-0.441647}, {0.652574,-0.942182,-0.469014}, {-0.263303,1,-0.516560}, {-0.263303,-1,-0.516560}, {0.3,1,-0.432094}, {0.3,-1,-0.432094}, {0.089932,1,-0.432094}, {0.089932,-1,-0.436595}};
     legs_positions.initialize(key_positions);
 
     numarray<vec3> key_positions_col =
@@ -98,6 +98,8 @@ void test_scene::display_frame(environment_structure &environment) {
         Spider.setLegPosition(spider::BackLeft,legs_positions.key_positions[3],false);
         Spider.setLegPosition(spider::MiddleRight,legs_positions.key_positions[4],false);
         Spider.setLegPosition(spider::MiddleLeft,legs_positions.key_positions[5],false);
+        Spider.setLegPosition(spider::Middle2Right,legs_positions.key_positions[6],false);
+        Spider.setLegPosition(spider::Middle2Left,legs_positions.key_positions[7],false);
         Spider.draw(environment);
         legs_positions.display_key_positions(environment);
     }

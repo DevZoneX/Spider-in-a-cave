@@ -82,10 +82,12 @@ void spider::initialize(){
     spider_hierarchy["front_arm_left3"].transform_local.translation = {0,0.01,0};
 
 
-    initializeLegHierarchy(BackLeft, "back_arm_left", {-0.13,+0.28,0});
-    initializeLegHierarchy(BackRight, "back_arm_right", {-0.13,+0.28,0});
-    initializeLegHierarchy(MiddleLeft, "middle_arm_left", {0,+0.3,0});
-    initializeLegHierarchy(MiddleRight, "middle_arm_right", {0,+0.3,0});
+    initializeLegHierarchy(BackLeft, "back_arm_left", {-0.18,+0.25,0});
+    initializeLegHierarchy(BackRight, "back_arm_right", {-0.18,+0.25,0});
+    initializeLegHierarchy(MiddleLeft, "middle_arm_left", {0.15,+0.3,0});
+    initializeLegHierarchy(MiddleRight, "middle_arm_right", {0.15,+0.3,0});
+    initializeLegHierarchy(Middle2Left, "middle_arm2_left", {-0.05,+0.27,0});
+    initializeLegHierarchy(Middle2Right, "middle_arm2_right", {-0.05,+0.27,0});
 
     initializeLegFabric(FrontRight);
     initializeLegFabric(FrontLeft);
@@ -93,6 +95,8 @@ void spider::initialize(){
     initializeLegFabric(BackRight);
     initializeLegFabric(MiddleLeft);
     initializeLegFabric(MiddleRight);
+    initializeLegFabric(Middle2Left);
+    initializeLegFabric(Middle2Right);
 }
 
 void spider::draw(environment_structure environment){
@@ -123,6 +127,8 @@ void spider::draw(environment_structure environment){
     updateLegHierarchy(BackRight,"back_arm_right");
     updateLegHierarchy(MiddleLeft,"middle_arm_left");
     updateLegHierarchy(MiddleRight,"middle_arm_right");
+    updateLegHierarchy(Middle2Left,"middle_arm2_left");
+    updateLegHierarchy(Middle2Right,"middle_arm2_right");
 
     spider_hierarchy.update_local_to_global_coordinates();
     cgp::draw(spider_hierarchy,environment);
@@ -156,7 +162,14 @@ void spider::setLegPosition(leg whichLeg, vec3 target, bool debug){
     else if(whichLeg==MiddleLeft){
         spider_node = spider_hierarchy["middle_arm_left_articulation"];
         parent_node = spider_hierarchy["middle_arm_left"];
-        //std::cout << spider_node.drawable.hierarchy_transform_model.translation << std::endl;
+    }
+    else if(whichLeg==Middle2Right){
+        spider_node = spider_hierarchy["middle_arm2_right_articulation"];
+        parent_node = spider_hierarchy["middle_arm2_right"];
+    }
+    else if(whichLeg==Middle2Left){
+        spider_node = spider_hierarchy["middle_arm2_left_articulation"];
+        parent_node = spider_hierarchy["middle_arm2_left"];
     }
     getLegFabric(whichLeg)->calculate(spider_node.drawable.hierarchy_transform_model.translation,target,parent_node.drawable.hierarchy_transform_model.rotation,debug);
 
@@ -182,7 +195,7 @@ float spider::getBoneLength(leg whichLeg, bone whichBone){
         }
         return 0.0;
     }
-    else if(whichLeg==MiddleLeft || whichLeg==MiddleRight){
+    else if(whichLeg==MiddleLeft || whichLeg==MiddleRight || whichLeg==Middle2Left || whichLeg==Middle2Right){
         if(whichBone==BaseBone || whichBone==FootBone){
             return 0.35f;
         }
@@ -207,12 +220,17 @@ fabric* spider::getLegFabric(leg whichLeg){
     else if(whichLeg==BackRight){
         return &legFabric[5];
     }
-
     else if(whichLeg==MiddleLeft){
         return &legFabric[2];
     }
     else if(whichLeg==MiddleRight){
         return &legFabric[3];
+    }
+    else if(whichLeg==Middle2Left){
+        return &legFabric[6];
+    }
+    else if(whichLeg==Middle2Right){
+        return &legFabric[7];
     }
     return &legFabric[2];
 }
@@ -259,7 +277,7 @@ void spider::initializeLegHierarchy(leg whichLeg, std::string baseName, vec3 bin
 void spider::updateLegHierarchy(leg whichLeg, std::string baseName){
     fabric* legF = getLegFabric(whichLeg);
 
-    if(whichLeg==FrontLeft || whichLeg==MiddleLeft || whichLeg==BackLeft){
+    if(whichLeg==FrontLeft || whichLeg==MiddleLeft || whichLeg==BackLeft || whichLeg==Middle2Left){
         spider_hierarchy[baseName].transform_local.rotation = rotation_transform::from_axis_angle({0,0,1},Pi);
     }
     spider_hierarchy[baseName+"_articulation"].transform_local.rotation = rotation_transform::from_axis_angle({0,0,1},legF->getBoneAngle(-1)) * rotation_transform::from_axis_angle({1,0,0},legF->getBoneAngle(0));

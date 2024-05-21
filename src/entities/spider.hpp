@@ -10,7 +10,7 @@
 class spider: public touchable_object
 {
 public:
-    enum leg {FrontLeft, FrontRight, MiddleLeft, MiddleRight, BackLeft, BackRight};
+    enum leg {FrontLeft, FrontRight, MiddleLeft, MiddleRight, Middle2Left, Middle2Right, BackLeft, BackRight};
     enum bone {BaseBone, MiddleBone, FootBone};
 private:
     float getBoneLength(leg whichLeg,bone whichBone);
@@ -22,7 +22,7 @@ private:
     void initializeLegFabric(leg whichLeg);
     cgp::hierarchy_mesh_drawable spider_hierarchy;
     rotation_transform rotation = cgp::rotation_axis_angle({0,0,1},0);
-    fabric legFabric[6];
+    fabric legFabric[8];
     float c_angle = Pi/7;
     float c_angle_2 = Pi/6;
 public:

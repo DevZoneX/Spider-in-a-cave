@@ -18,7 +18,7 @@ using namespace cgp;
 
 struct test_gui {
 
-    int selected_scene = 2;
+    int selected_scene = 0;
     int num_scenes = 4;
     const char* const listc[4] = {"Spider", "Colisions", "Partition and collisions", "Terrain and collisions"};
 
