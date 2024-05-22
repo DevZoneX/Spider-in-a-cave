@@ -247,7 +247,7 @@ vec3 spider::getUpVector(){
     return rotation*up;
 }
 vec3 spider::getRightVector(){
-    vec3 right = {0,1,0};
+    vec3 right = {0,-1,0};
     return rotation*right;
 }
 vec3 spider::getFrontVector(){

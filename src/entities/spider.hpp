@@ -37,6 +37,8 @@ public:
 
     void updateGlobal();
     void setLegPosition(leg whichLeg, vec3 target, bool debug=false);
+    void updateTranslation(){spider_hierarchy["body"].transform_local.translation = translation;}
+    void updateRotation(){spider_hierarchy["body"].transform_local.rotation = rotation;}
 
     vec3 getLegPosition(leg whichLeg);
     vec3 getLegJoint(leg whichLeg);

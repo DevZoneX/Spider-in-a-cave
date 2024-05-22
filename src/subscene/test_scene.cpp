@@ -62,6 +62,7 @@ void test_scene::initialize(input_devices& _inputs, window_structure& window){
     Spider2.initialize();
 
     debug_timer.t_periodic = 1;
+    timer.start();
 
     colsphere = new collision_sphere({0,0,0}, 1.0f);
     colsphere->translation = {0,3,0};
@@ -89,7 +90,7 @@ void test_scene::initialize(input_devices& _inputs, window_structure& window){
 
 
     cave.initialize();
-    SpiderCtrl.initialize(&Spider2);
+    SpiderCtrl.initialize(&Spider2,&timer,_inputs,window);
     SpiderCtrl.stick_to_ground(&cave);
 }
 
@@ -223,6 +224,7 @@ void test_scene::display_frame(environment_structure &environment) {
         }
     }
     else if(gui.selected_scene==4){
+        SpiderCtrl.stick_to_ground(&cave, false);
         SpiderCtrl.update();
         cave.draw(environment);
         Spider2.draw(environment);
@@ -275,6 +277,7 @@ void test_scene::display_gui(){
 void test_scene::mouse_move_event(environment_structure &environment,input_devices& inputs,camera_projection_perspective &_camera_projection){
     if (!inputs.keyboard.shift)
 		camera_control.action_mouse_move(environment.camera_view);
+    
 
     if(gui.selected_scene==0){
         legs_positions.update_picking(inputs, camera_control.camera_model, _camera_projection);
@@ -288,15 +291,27 @@ void test_scene::mouse_move_event(environment_structure &environment,input_devic
     else if(gui.selected_scene==3){
         col_positions_scene3.update_picking(inputs, camera_control.camera_model, _camera_projection);
     }
+    else if(gui.selected_scene==4){
+        SpiderCtrl.mouse_move_event(environment, inputs);
+    }
 }
 void test_scene::mouse_click_event(environment_structure &environment){
     camera_control.action_mouse_move(environment.camera_view);
+    if(gui.selected_scene==4){
+        SpiderCtrl.mouse_click_event(environment);
+    }
 }
 void test_scene::action_keyboard(environment_structure &environment){
     camera_control.action_keyboard(environment.camera_view);
+    if(gui.selected_scene==4){
+        SpiderCtrl.action_keyboard(environment);
+    }
 }
 void test_scene::idle_frame(environment_structure &environment){
     camera_control.idle_frame(environment.camera_view);
+    if(gui.selected_scene==4){
+        SpiderCtrl.idle_frame(environment, &cave);
+    }
 }
 
 
