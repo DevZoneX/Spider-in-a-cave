@@ -27,11 +27,12 @@ test_scene::~test_scene() {
     }
 }
 
-void test_scene::initialize(input_devices& inputs, window_structure& window){
+void test_scene::initialize(input_devices& _inputs, window_structure& window){
 
 	// Set the behavior of the camera and its initial position
 	// ********************************************** //
-	camera_control.initialize(inputs, window); 
+	camera_control.initialize(_inputs, window); 
+    inputs = &_inputs;
 	camera_control.set_rotation_axis_z(); // camera rotates around z-axis
 	//   look_at(camera_position, targeted_point, up_direction)
 	camera_control.look_at(
@@ -58,6 +59,7 @@ void test_scene::initialize(input_devices& inputs, window_structure& window){
     col_positions_scene3.initialize(key_positions_ray);
 
     Spider.initialize();
+    Spider2.initialize();
 
     debug_timer.t_periodic = 1;
 
@@ -87,6 +89,8 @@ void test_scene::initialize(input_devices& inputs, window_structure& window){
 
 
     cave.initialize();
+    SpiderCtrl.initialize(&Spider2);
+    SpiderCtrl.stick_to_ground(&cave);
 }
 
 void test_scene::display_frame(environment_structure &environment) {
@@ -218,6 +222,12 @@ void test_scene::display_frame(environment_structure &environment) {
             std::cout << "Collision";
         }
     }
+    else if(gui.selected_scene==4){
+        SpiderCtrl.update();
+        cave.draw(environment);
+        Spider2.draw(environment);
+        SpiderCtrl.debug_draw(environment);
+    }
 }
 
 
@@ -256,6 +266,9 @@ void test_scene::display_gui(){
     }
     else if(gui.selected_scene==3){
         ImGui::Checkbox("Show Cave", &gui.show_cave);
+    }
+    else if(gui.selected_scene==4){
+
     }
 }
 

@@ -35,9 +35,15 @@ public:
 
     void draw(environment_structure environment);
 
+    void updateGlobal();
     void setLegPosition(leg whichLeg, vec3 target, bool debug=false);
 
     vec3 getLegPosition(leg whichLeg);
+    vec3 getLegJoint(leg whichLeg);
+    vec3 getUpVector();
+    vec3 getRightVector();
+    vec3 getFrontVector();
+    std::string getLegPrefix(leg whichLeg);
 
     void set_rotation(rotation_transform _rotation);
     rotation_transform get_rotation();

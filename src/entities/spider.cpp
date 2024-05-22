@@ -44,20 +44,6 @@ void spider::initialize(){
     spider_hierarchy.add(cube,"rightc2","rightc1");
 
 
-    spider_hierarchy.add(mesh_drawable(),"front_arm_right","body");
-    spider_hierarchy.add(front_leg_c1,"front_arm_right_articulation","front_arm_right");
-    spider_hierarchy.add(articulation,"front_arm_right2_articulation","front_arm_right_articulation");
-    spider_hierarchy.add(front_leg_c2,"front_arm_right2","front_arm_right2_articulation");
-    spider_hierarchy.add(articulation,"front_arm_right3_articulation","front_arm_right2");
-    spider_hierarchy.add(front_leg_c3,"front_arm_right3","front_arm_right3_articulation");
-
-    spider_hierarchy.add(mesh_drawable(),"front_arm_left","body");
-    spider_hierarchy.add(front_leg_c1,"front_arm_left_articulation","front_arm_left");
-    spider_hierarchy.add(articulation,"front_arm_left2_articulation","front_arm_left_articulation");
-    spider_hierarchy.add(front_leg_c2,"front_arm_left2","front_arm_left2_articulation");
-    spider_hierarchy.add(articulation,"front_arm_left3_articulation","front_arm_left2");
-    spider_hierarchy.add(front_leg_c3,"front_arm_left3","front_arm_left3_articulation");
-
     spider_hierarchy["tail_body"].transform_local.translation = {-0.57,0,0};
     spider_hierarchy["tail_body"].transform_local.rotation = rotation_transform::from_axis_angle({0,1,0},Pi/6);
     spider_hierarchy["leftc1"].transform_local.translation = {0.4,-0.15f,0.04};
@@ -67,21 +53,9 @@ void spider::initialize(){
     spider_hierarchy["rightc2"].transform_local.translation = {0.29,0,0};
 
 
-    spider_hierarchy["front_arm_right"].transform_local.translation = {0.35,0,0};
-    spider_hierarchy["front_arm_right_articulation"].transform_local.translation = {0,0.22,0};
-    spider_hierarchy["front_arm_right2_articulation"].transform_local.translation = {0,getBoneLength(FrontLeft,BaseBone)+0.01,0};
-    spider_hierarchy["front_arm_right2"].transform_local.translation = {0,0.01,0};
-    spider_hierarchy["front_arm_right3_articulation"].transform_local.translation = {0,getBoneLength(FrontLeft,MiddleBone)+0.01,0};
-    spider_hierarchy["front_arm_right3"].transform_local.translation = {0,0.01,0};
 
-    spider_hierarchy["front_arm_left"].transform_local.translation = {0.35,0,0};
-    spider_hierarchy["front_arm_left_articulation"].transform_local.translation = {0,0.22,0};
-    spider_hierarchy["front_arm_left2_articulation"].transform_local.translation = {0,getBoneLength(FrontLeft,BaseBone)+0.01,0};
-    spider_hierarchy["front_arm_left2"].transform_local.translation = {0,0.01,0};
-    spider_hierarchy["front_arm_left3_articulation"].transform_local.translation = {0,getBoneLength(FrontLeft,MiddleBone)+0.01,0};
-    spider_hierarchy["front_arm_left3"].transform_local.translation = {0,0.01,0};
-
-
+    initializeLegHierarchy(FrontLeft, "front_arm_left", {0.35,0.22,0});
+    initializeLegHierarchy(FrontRight, "front_arm_right", {0.35,0.22,0});
     initializeLegHierarchy(BackLeft, "back_arm_left", {-0.18,+0.25,0});
     initializeLegHierarchy(BackRight, "back_arm_right", {-0.18,+0.25,0});
     initializeLegHierarchy(MiddleLeft, "middle_arm_left", {0.15,+0.3,0});
@@ -97,6 +71,15 @@ void spider::initialize(){
     initializeLegFabric(MiddleRight);
     initializeLegFabric(Middle2Left);
     initializeLegFabric(Middle2Right);
+
+    updateLegHierarchy(FrontLeft,"front_arm_left");
+    updateLegHierarchy(FrontRight,"front_arm_right");
+    updateLegHierarchy(BackLeft,"back_arm_left");
+    updateLegHierarchy(BackRight,"back_arm_right");
+    updateLegHierarchy(MiddleLeft,"middle_arm_left");
+    updateLegHierarchy(MiddleRight,"middle_arm_right");
+    updateLegHierarchy(Middle2Left,"middle_arm2_left");
+    updateLegHierarchy(Middle2Right,"middle_arm2_right");
 }
 
 void spider::draw(environment_structure environment){
@@ -133,7 +116,9 @@ void spider::draw(environment_structure environment){
     spider_hierarchy.update_local_to_global_coordinates();
     cgp::draw(spider_hierarchy,environment);
 }
-
+void spider::updateGlobal(){
+    spider_hierarchy.update_local_to_global_coordinates();
+}
 
 void spider::setLegPosition(leg whichLeg, vec3 target, bool debug){
     hierarchy_mesh_drawable_node spider_node;
@@ -153,7 +138,6 @@ void spider::setLegPosition(leg whichLeg, vec3 target, bool debug){
     else if(whichLeg==BackLeft){
         spider_node = spider_hierarchy["back_arm_left_articulation"];
         parent_node = spider_hierarchy["back_arm_left"];
-        //std::cout << spider_node.drawable.hierarchy_transform_model.translation << std::endl;
     }
     else if(whichLeg==MiddleRight){
         spider_node = spider_hierarchy["middle_arm_right_articulation"];
@@ -208,31 +192,7 @@ float spider::getBoneLength(leg whichLeg, bone whichBone){
 }
 
 fabric* spider::getLegFabric(leg whichLeg){
-    if(whichLeg==FrontLeft){
-        return &legFabric[0];
-    }
-    else if(whichLeg==FrontRight){
-        return &legFabric[1];
-    }
-    else if(whichLeg==BackLeft){
-        return &legFabric[4];
-    }
-    else if(whichLeg==BackRight){
-        return &legFabric[5];
-    }
-    else if(whichLeg==MiddleLeft){
-        return &legFabric[2];
-    }
-    else if(whichLeg==MiddleRight){
-        return &legFabric[3];
-    }
-    else if(whichLeg==Middle2Left){
-        return &legFabric[6];
-    }
-    else if(whichLeg==Middle2Right){
-        return &legFabric[7];
-    }
-    return &legFabric[2];
+    return &legFabric[whichLeg];
 }
 
 void spider::initializeLegFabric(leg whichLeg){
@@ -246,6 +206,55 @@ void spider::initializeLegFabric(leg whichLeg){
 vec3 spider::getLegPosition(leg whichLeg){
     return getLegFabric(whichLeg)->getLast();
 }
+
+vec3 spider::getLegJoint(leg whichLeg){
+    return spider_hierarchy[getLegPrefix(whichLeg)+"_articulation"].drawable.hierarchy_transform_model.translation;
+}
+std::string spider::getLegPrefix(leg whichLeg){
+    switch (whichLeg)
+    {
+        case BackLeft:
+            return "back_arm_left";
+            break;
+        case BackRight:
+            return "back_arm_right";
+            break;
+        case MiddleLeft:
+            return "middle_arm_left";
+            break;
+        case MiddleRight:
+            return "middle_arm_right";
+            break;
+        case Middle2Left:
+            return "middle_arm2_left";
+            break;
+        case Middle2Right:
+            return "middle_arm2_right";
+            break;
+        case FrontLeft:
+            return "front_arm_left";
+            break;
+        case FrontRight:
+            return "front_arm_right";
+            break;
+        default:
+            return "front_arm_right";
+            break;
+    }
+}
+vec3 spider::getUpVector(){
+    vec3 up = {0,0,1};
+    return rotation*up;
+}
+vec3 spider::getRightVector(){
+    vec3 right = {0,1,0};
+    return rotation*right;
+}
+vec3 spider::getFrontVector(){
+    vec3 front = {1,0,0};
+    return rotation*front;
+}
+
 
 void spider::initializeLegHierarchy(leg whichLeg, std::string baseName, vec3 bindPosition){
     mesh_drawable articulation;

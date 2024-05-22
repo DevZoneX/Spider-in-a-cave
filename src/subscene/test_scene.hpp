@@ -7,6 +7,7 @@
 
 
 
+#include "../entities/spider_controller.hpp"
 #include "../entities/spider.hpp"
 #include "../map/cave_mesh.hpp"
 #include "../utils/key_positions_structure.hpp"
@@ -18,9 +19,9 @@ using namespace cgp;
 
 struct test_gui {
 
-    int selected_scene = 0;
-    int num_scenes = 4;
-    const char* const listc[4] = {"Spider", "Colisions", "Partition and collisions", "Terrain and collisions"};
+    int selected_scene = 4;
+    int num_scenes = 5;
+    const char* const listc[5] = {"Spider", "Colisions", "Partition and collisions", "Terrain and collisions", "Spider Controller"};
 
 
     float spider_rotation_around_x = 0;
@@ -39,6 +40,8 @@ class test_scene: public subscene {
 public:
 
     test_gui gui;
+    input_devices* inputs;
+
 
     // Props
 
@@ -48,6 +51,8 @@ public:
     keyframe_structure col_positions_partition;
     keyframe_structure col_positions_scene3;
     spider Spider;
+    spider Spider2;
+    SpiderController SpiderCtrl;
     collision_sphere* colsphere;
     collision_sphere* colsphere2;
     collision_box* colsbox;
@@ -68,7 +73,7 @@ public:
     // Functions
     test_scene(){};
     ~test_scene();
-    void initialize(input_devices& inputs, window_structure& window);
+    void initialize(input_devices& _inputs, window_structure& window);
     void display_frame(environment_structure &environment);
     void display_gui();
     void mouse_move_event(environment_structure &environment,input_devices& inputs,camera_projection_perspective &_camera_projection);
