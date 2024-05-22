@@ -15,6 +15,7 @@ void SpiderController::initialize(spider* _ControlledSpider,timer_basic* _timer,
 }
 bool SpiderController::stick_to_ground(collision_object* col, bool reset){
     ControlledSpider->updateGlobal();
+    debug.reset_stick();
     bool allGood = true;
     for(int i=0;i<NUM_LEGS;i++){
         vec3 pos = ControlledSpider->getLegJoint(params.legs[i]);
@@ -225,4 +226,25 @@ void SpiderController::idle_frame(environment_structure &environment, collision_
     }
     camera_control.camera_model.look_at(camera_control.camera_model.position(), center, ControlledSpider->getUpVector());
     camera_control.idle_frame(environment.camera_view);
+}
+
+
+
+
+
+
+
+
+
+
+// ___________________________________________________________  //
+// ___________________________________________________________  //
+// ___________________________________________________________  //
+// ___________________________________________________________  //
+
+
+
+void SpiderController::debug::reset_stick(){
+    rays_to_draw.clear();
+    rays_collision_pos.clear();
 }

@@ -19,6 +19,8 @@ class SpiderController
         std::vector<collision_ray> rays_to_draw;
         std::vector<vec3> rays_collision_pos;
         mesh_drawable sphere;
+
+        void reset_stick();
     };
     struct params{
         spider::leg legs[NUM_LEGS] = {spider::FrontLeft,spider::FrontRight,spider::MiddleLeft,spider::MiddleRight,spider::Middle2Left,spider::Middle2Right,spider::BackLeft,spider::BackRight};
