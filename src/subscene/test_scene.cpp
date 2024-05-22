@@ -220,7 +220,6 @@ void test_scene::display_frame(environment_structure &environment) {
         if(cave.does_collide(colray,temp)){
             sphere.model.translation = temp;
             draw(sphere,environment);
-            std::cout << "Collision";
         }
     }
     else if(gui.selected_scene==4){
