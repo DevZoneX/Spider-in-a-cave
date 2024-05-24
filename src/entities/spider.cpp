@@ -54,14 +54,14 @@ void spider::initialize(){
 
 
 
-    initializeLegHierarchy(FrontLeft, "front_arm_left", {0.35,0.22,0});
-    initializeLegHierarchy(FrontRight, "front_arm_right", {0.35,0.22,0});
-    initializeLegHierarchy(BackLeft, "back_arm_left", {-0.18,+0.25,0});
-    initializeLegHierarchy(BackRight, "back_arm_right", {-0.18,+0.25,0});
-    initializeLegHierarchy(MiddleLeft, "middle_arm_left", {0.15,+0.3,0});
-    initializeLegHierarchy(MiddleRight, "middle_arm_right", {0.15,+0.3,0});
-    initializeLegHierarchy(Middle2Left, "middle_arm2_left", {-0.05,+0.27,0});
-    initializeLegHierarchy(Middle2Right, "middle_arm2_right", {-0.05,+0.27,0});
+    initializeLegHierarchy(FrontLeft, {0.35,0.22,0});
+    initializeLegHierarchy(FrontRight, {0.35,0.22,0});
+    initializeLegHierarchy(BackLeft, {-0.23,+0.25,0});
+    initializeLegHierarchy(BackRight, {-0.23,+0.25,0});
+    initializeLegHierarchy(MiddleLeft, {0.15,+0.3,0});
+    initializeLegHierarchy(MiddleRight, {0.15,+0.3,0});
+    initializeLegHierarchy(Middle2Left, {-0.05,+0.27,0});
+    initializeLegHierarchy(Middle2Right, {-0.05,+0.27,0});
 
     initializeLegFabric(FrontRight);
     initializeLegFabric(FrontLeft);
@@ -190,6 +190,33 @@ float spider::getBoneLength(leg whichLeg, bone whichBone){
     }
     return 0.0;
 }
+vec3 spider::getRestPositionLocal(leg whichLeg){
+    vec3 position = {0,0,0};
+    position.y = 0.9;
+    if(whichLeg==FrontLeft || whichLeg==FrontRight){
+        position.x = 0.8;
+        position.y *= 0.95;
+    }
+    else if(whichLeg==MiddleLeft || whichLeg==MiddleRight){
+        position.x = 0.4;
+    }
+    else if(whichLeg==Middle2Left || whichLeg==Middle2Right){
+        position.x = 0;
+    }
+    else if(whichLeg==BackLeft || whichLeg==BackRight){
+        position.x = -0.5;
+    }
+
+    if(whichLeg==FrontRight || whichLeg==MiddleRight || whichLeg==Middle2Right || whichLeg==BackRight){
+        position.y *= -1;
+    }
+    position.z = -0.5;
+    return position;
+}
+vec3 spider::getRestPosition(leg whichLeg){
+    return spider_hierarchy[getLegPrefix(whichLeg)+"_articulation"].drawable.hierarchy_transform_model.translation;
+}
+
 
 fabric* spider::getLegFabric(leg whichLeg){
     return &legFabric[whichLeg];
@@ -256,17 +283,20 @@ vec3 spider::getFrontVector(){
 }
 
 
-void spider::initializeLegHierarchy(leg whichLeg, std::string baseName, vec3 bindPosition){
+void spider::initializeLegHierarchy(leg whichLeg, vec3 bindPosition){
     mesh_drawable articulation;
     mesh_drawable bone1;
     mesh_drawable bone2;
     mesh_drawable bone3;
+
+    std::string baseName = getLegPrefix(whichLeg);
 
     articulation.initialize_data_on_gpu(mesh_primitive_sphere(0.035f));
     bone1.initialize_data_on_gpu(mesh_primitive_cylinder(0.03f,{0,0,0},{0,getBoneLength(whichLeg,BaseBone),0}));
     bone2.initialize_data_on_gpu(mesh_primitive_cylinder(0.03f,{0,0,0},{0,getBoneLength(whichLeg,MiddleBone),0}));
     bone3.initialize_data_on_gpu(mesh_primitive_cylinder(0.03f,{0,0,0},{0,getBoneLength(whichLeg,FootBone),0}));
 
+    spider_hierarchy.add(articulation,baseName+"_rest","body");
     spider_hierarchy.add(mesh_drawable(),baseName,"body");
     spider_hierarchy.add(bone1,baseName+"_articulation",baseName);
     spider_hierarchy.add(articulation,baseName+"2_articulation",baseName+"_articulation");
@@ -281,6 +311,8 @@ void spider::initializeLegHierarchy(leg whichLeg, std::string baseName, vec3 bin
     spider_hierarchy[baseName+"2"].transform_local.translation = {0,0.01,0};
     spider_hierarchy[baseName+"3_articulation"].transform_local.translation = {0,getBoneLength(whichLeg,MiddleBone)+0.01,0};
     spider_hierarchy[baseName+"3"].transform_local.translation = {0,0.01,0};
+
+    spider_hierarchy[baseName+"_rest"].transform_local.translation = getRestPositionLocal(whichLeg);
 }
 
 void spider::updateLegHierarchy(leg whichLeg, std::string baseName){

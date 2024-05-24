@@ -14,8 +14,9 @@ public:
     enum bone {BaseBone, MiddleBone, FootBone};
 private:
     float getBoneLength(leg whichLeg,bone whichBone);
+    cgp::vec3 getRestPositionLocal(leg whichLeg);
 
-    void initializeLegHierarchy(leg whichLeg, std::string baseName, vec3 bindPosition);
+    void initializeLegHierarchy(leg whichLeg, vec3 bindPosition);
     void updateLegHierarchy(leg whichLeg, std::string baseName);
 
     fabric* getLegFabric(leg whichLeg);
@@ -41,6 +42,7 @@ public:
     void updateRotation(){spider_hierarchy["body"].transform_local.rotation = rotation;}
 
     vec3 getLegPosition(leg whichLeg);
+    vec3 getRestPosition(leg whichLeg);
     vec3 getLegJoint(leg whichLeg);
     vec3 getUpVector();
     vec3 getRightVector();
