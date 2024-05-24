@@ -55,12 +55,13 @@ bool SpiderController::isEventTriggered(int &event_index)
     }
     float max_variance = -1;
     int max_index = -1;
+    std::vector<spider::leg> max_legs_to_move;
     bool isTriggered = false;
     for(int i=0;i<LegPartitions.size();i++){
         float variance = 0;
+        std::vector<spider::leg> temp_to_move;
         for(int j=0;j<LegPartitions[i].size();j++){
             float restRadius = getRestRadius(LegPartitions[i][j]);
-            std::cout << LegPartitions[i][j] << " : " << rest_displacement[LegPartitions[i][j]] << std::endl;
             vec3 restPosition = ControlledSpider->getRestPosition(LegPartitions[i][j]) + rest_displacement[LegPartitions[i][j]] * ControlledSpider->getUpVector();
             float distance = norm(restPosition - legPositions[LegPartitions[i][j]]);
             if(debug.debug_rest_positions){
@@ -70,6 +71,9 @@ bool SpiderController::isEventTriggered(int &event_index)
                 variance += pow(distance-restRadius,2);
                 isTriggered = true;
             }
+            if(distance>restRadius/2){
+                temp_to_move.push_back(LegPartitions[i][j]);
+            }
         }
         if(LegPartitions[i].size()>0){
             variance /= LegPartitions[i].size();
@@ -77,12 +81,26 @@ bool SpiderController::isEventTriggered(int &event_index)
         if(variance>max_variance){
             max_index = i;
             max_variance = variance;
+            max_legs_to_move = temp_to_move;
+            if(params.moveAllLegs){
+                max_legs_to_move = LegPartitions[i];
+            }
         }
     }
     if(isTriggered){
         event_index = max_index;
+        eventQueue.legs_to_move = max_legs_to_move;
     }
     return isTriggered;
+}
+
+float SpiderController::getRestRadius(spider::leg whichLeg)
+{
+    if(whichLeg==spider::BackLeft){whichLeg = spider::FrontLeft;}
+    if(norm(velocity)<0.01){
+        return 0.07f;
+    }
+    return 0.2f;
 }
 
 void SpiderController::smoothHeight(bool average)
@@ -175,7 +193,7 @@ void SpiderController::debug_draw(environment_structure environment){
     }
 }
 
-void SpiderController::update(){
+void SpiderController::update(collision_object* col){
     timer->update();
     float dt = timer->t-old_t;
 
@@ -184,11 +202,12 @@ void SpiderController::update(){
     for(int i=0;i<min_iter;i++){
         handlePosition(params.maxDt);
         handleVelocity(params.maxDt);
-        animate(params.maxDt);
+        animate(params.maxDt,col);
     }
     handlePosition(leftDt);
     handleVelocity(leftDt);
-    animate(dt);
+    animate(dt,col);
+    smoothHeight();
 
 
     old_t = timer->t;
@@ -203,10 +222,45 @@ void SpiderController::update(){
 }
 
 
-void SpiderController::animate(float dt){
+void SpiderController::animate(float dt,collision_object* col){
     if(!eventQueue.isEvent){
         if(isEventTriggered(eventQueue.event)){
-            std::cout << "Event" << std::endl;
+            eventQueue.isEvent = true;
+            eventQueue.event_time = 0;
+
+            smoothHeight();
+
+            float vx = dot(ControlledSpider->getFrontVector(),velocity)/params.maxSpeed;
+            float vy = dot(ControlledSpider->getRightVector(),velocity)/params.maxSpeed;
+            for(auto leg : eventQueue.legs_to_move){
+                vec3 restPos = ControlledSpider->getRestPosition(leg,vx,vy);
+                initialLegPositions[leg] = legPositions[leg];
+                collision_ray ray(restPos+params.maxLegElevation*ControlledSpider->getUpVector(),-(params.maxLegElevation-params.minLegElevation)*ControlledSpider->getUpVector());
+                vec3 temp;
+                if(col->does_collide(&ray,temp)){
+                    targetLegPositions[leg] = temp;
+                    rest_displacement[leg] = dot(temp-ControlledSpider->getRestPosition(leg),ControlledSpider->getUpVector());
+                }
+            }
+        }
+    }
+    if(eventQueue.isEvent){
+        float animationDuration = params.getAnimationDuration();
+        eventQueue.event_time += dt;
+
+        float fraction = eventQueue.event_time/animationDuration;
+        float sin_fraction = sin(fraction*Pi);
+        float cos_fraction = 1-(cos(fraction*Pi)+1)/2;
+        for(auto leg : eventQueue.legs_to_move){
+            legPositions[leg] = cos_fraction * targetLegPositions[leg] + (1-cos_fraction) * initialLegPositions[leg];
+            legPositions[leg] += sin_fraction * params.animationHeight * ControlledSpider->getUpVector();
+        }
+
+        float timeDiff = eventQueue.event_time-animationDuration;
+        if(timeDiff>0){
+            eventQueue.isEvent = false;
+            eventQueue.event_time = 0;
+            animate(timeDiff,col);
         }
     }
 }
@@ -310,6 +364,11 @@ void SpiderController::idle_frame(environment_structure &environment, collision_
 
 
 
+float SpiderController::params::getAnimationDuration()
+{
+    return 0.3f/animationSpeed/maxSpeed;
+}
+
 void SpiderController::debug::reset_stick(){
     rays_to_draw.clear();
     rays_collision_pos.clear();
@@ -322,3 +381,5 @@ void SpiderController::debug::display_gui()
 {
     ImGui::Checkbox("Display rest positions",&debug_rest_positions);
 }
+
+

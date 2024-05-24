@@ -223,7 +223,7 @@ void test_scene::display_frame(environment_structure &environment) {
         }
     }
     else if(gui.selected_scene==4){
-        SpiderCtrl.update();
+        SpiderCtrl.update(&cave);
         cave.draw(environment);
         Spider2.draw(environment);
         SpiderCtrl.debug_draw(environment);

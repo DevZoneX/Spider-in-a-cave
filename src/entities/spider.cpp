@@ -208,7 +208,7 @@ vec3 spider::getRestPositionLocal(leg whichLeg){
         position.y *= 0.95;
     }
 
-    if(whichLeg==FrontRight || whichLeg==MiddleRight || whichLeg==Middle2Right || whichLeg==BackRight){
+    if(whichLeg==FrontLeft || whichLeg==MiddleLeft || whichLeg==Middle2Left || whichLeg==BackLeft){
         position.y *= -1;
     }
     position.z = -0.5;
@@ -218,6 +218,9 @@ vec3 spider::getRestPosition(leg whichLeg){
     return spider_hierarchy[getLegPrefix(whichLeg)+"_rest"].drawable.hierarchy_transform_model.translation;
 }
 
+vec3 spider::getRestPosition(leg whichLeg, float vx, float vy){
+    return getRestPosition(whichLeg) + 0.4*vx*getFrontVector()+ 0.4*vy*getRightVector();
+}
 
 fabric* spider::getLegFabric(leg whichLeg){
     return &legFabric[whichLeg];

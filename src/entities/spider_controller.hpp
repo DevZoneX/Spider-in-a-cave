@@ -30,31 +30,41 @@ class SpiderController
     };
     struct params{
         spider::leg legs[NUM_LEGS] = {spider::FrontLeft,spider::FrontRight,spider::MiddleLeft,spider::MiddleRight,spider::Middle2Left,spider::Middle2Right,spider::BackLeft,spider::BackRight};
-        float BodyHeight = 0.5f;
+        float BodyHeight = 0.6f;
         float RestPositionDistance = 1.5f;
         float acceleration = 0.9f;
         float maxSpeed = 0.8f;
+        float maxLegElevation = 1.0f;
+        float minLegElevation = -0.7f;
         float animationSpeed = 1.0f;
+        float animationHeight = 0.2f;
 
-        float maxDt = 0.05;
+        float maxDt = 0.04;
 
         float camera_max_distance = 4.0f;
+        bool moveAllLegs = false;
 
         int selected_keyboard = 1;
         std::string keyboards_control[KEYBOARD_LAYOUTS] = {"QWERTY","AZERTY","Keyboard Arrows"};
+
+
+        float getAnimationDuration();
     };
     struct EventQueue{
         bool isEvent = false;
+        std::vector<spider::leg> legs_to_move;
         int event=0;
+        float event_time;
     };
 private:
     //third_person_camera_controller camera_control;
     camera_controller_orbit camera_control;
-    const params params;
+    params params;
     spider* ControlledSpider;
     bool initialized = false;
     vec3 legPositions[NUM_LEGS];
     vec3 targetLegPositions[NUM_LEGS];
+    vec3 initialLegPositions[NUM_LEGS];
     float rest_displacement[NUM_LEGS];
     input_devices* inputs;
     EventQueue eventQueue;
@@ -69,10 +79,10 @@ private:
 
 
     bool isEventTriggered(int &event_index);
-    float getRestRadius(spider::leg whichLeg){if(whichLeg==spider::BackLeft){return 0.2f;}return 0.2f;}
+    float getRestRadius(spider::leg whichLeg);
 
     void smoothHeight(bool average=false); // Function for smoothing out the position of the body according to the position of the legs
-    void animate(float dt);
+    void animate(float dt,collision_object* col);
 public:
     debug debug;
     SpiderController(){}
@@ -80,7 +90,7 @@ public:
 
     void initialize(spider* _ControlledSpider,timer_basic* _timer,input_devices& _inputs, window_structure& window);
     bool stick_to_ground(collision_object* col, bool reset = true);
-    void update();
+    void update(collision_object* col);
     void debug_draw(environment_structure environment);
 
     // Control handlers
