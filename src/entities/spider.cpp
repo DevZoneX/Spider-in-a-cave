@@ -192,7 +192,7 @@ float spider::getBoneLength(leg whichLeg, bone whichBone){
 }
 vec3 spider::getRestPositionLocal(leg whichLeg){
     vec3 position = {0,0,0};
-    position.y = 0.9;
+    position.y = 0.8;
     if(whichLeg==FrontLeft || whichLeg==FrontRight){
         position.x = 0.8;
         position.y *= 0.95;
@@ -205,6 +205,7 @@ vec3 spider::getRestPositionLocal(leg whichLeg){
     }
     else if(whichLeg==BackLeft || whichLeg==BackRight){
         position.x = -0.5;
+        position.y *= 0.95;
     }
 
     if(whichLeg==FrontRight || whichLeg==MiddleRight || whichLeg==Middle2Right || whichLeg==BackRight){
@@ -214,7 +215,7 @@ vec3 spider::getRestPositionLocal(leg whichLeg){
     return position;
 }
 vec3 spider::getRestPosition(leg whichLeg){
-    return spider_hierarchy[getLegPrefix(whichLeg)+"_articulation"].drawable.hierarchy_transform_model.translation;
+    return spider_hierarchy[getLegPrefix(whichLeg)+"_rest"].drawable.hierarchy_transform_model.translation;
 }
 
 
@@ -269,7 +270,15 @@ std::string spider::getLegPrefix(leg whichLeg){
             break;
     }
 }
-vec3 spider::getUpVector(){
+spider::LegPartitions spider::getLegPartitions()
+{
+    LegPartitions partition;
+    partition.push_back({FrontLeft,MiddleRight,Middle2Left,BackRight});
+    partition.push_back({FrontRight,MiddleLeft,Middle2Right,BackLeft});
+    return partition;
+}
+vec3 spider::getUpVector()
+{
     vec3 up = {0,0,1};
     return rotation*up;
 }
@@ -296,7 +305,7 @@ void spider::initializeLegHierarchy(leg whichLeg, vec3 bindPosition){
     bone2.initialize_data_on_gpu(mesh_primitive_cylinder(0.03f,{0,0,0},{0,getBoneLength(whichLeg,MiddleBone),0}));
     bone3.initialize_data_on_gpu(mesh_primitive_cylinder(0.03f,{0,0,0},{0,getBoneLength(whichLeg,FootBone),0}));
 
-    spider_hierarchy.add(articulation,baseName+"_rest","body");
+    spider_hierarchy.add(mesh_drawable(),baseName+"_rest","body");
     spider_hierarchy.add(mesh_drawable(),baseName,"body");
     spider_hierarchy.add(bone1,baseName+"_articulation",baseName);
     spider_hierarchy.add(articulation,baseName+"2_articulation",baseName+"_articulation");

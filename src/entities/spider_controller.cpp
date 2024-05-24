@@ -5,10 +5,15 @@
 
 void SpiderController::initialize(spider* _ControlledSpider,timer_basic* _timer,input_devices& _inputs, window_structure& window){
     ControlledSpider = _ControlledSpider;
+    LegPartitions = ControlledSpider->getLegPartitions();
     camera_control.initialize(_inputs, window);
     inputs = &_inputs;
     timer = _timer;
-    //camera_control.set_trapped_cursor(true);
+
+    for(int i=0;i<NUM_LEGS;i++){
+        rest_displacement[i] = 0;
+    }
+
     debug.sphere.initialize_data_on_gpu(mesh_primitive_sphere(0.1f));
     old_t = timer->t;
     position = ControlledSpider->translation;
@@ -34,10 +39,54 @@ bool SpiderController::stick_to_ground(collision_object* col, bool reset){
     }
     smoothHeight(reset);
     position = ControlledSpider->translation;
+    ControlledSpider->updateTranslation();
+    ControlledSpider->updateRotation();
+    ControlledSpider->updateGlobal();
+    for(int i=0;i<NUM_LEGS;i++){
+        rest_displacement[params.legs[i]] = dot(legPositions[params.legs[i]]-ControlledSpider->getRestPosition(params.legs[i]),ControlledSpider->getUpVector());
+    }
     return allGood;
 }
 
-void SpiderController::smoothHeight(bool average){
+bool SpiderController::isEventTriggered(int &event_index)
+{
+    if(debug.debug_rest_positions){
+        debug.reset_rest();
+    }
+    float max_variance = -1;
+    int max_index = -1;
+    bool isTriggered = false;
+    for(int i=0;i<LegPartitions.size();i++){
+        float variance = 0;
+        for(int j=0;j<LegPartitions[i].size();j++){
+            float restRadius = getRestRadius(LegPartitions[i][j]);
+            std::cout << LegPartitions[i][j] << " : " << rest_displacement[LegPartitions[i][j]] << std::endl;
+            vec3 restPosition = ControlledSpider->getRestPosition(LegPartitions[i][j]) + rest_displacement[LegPartitions[i][j]] * ControlledSpider->getUpVector();
+            float distance = norm(restPosition - legPositions[LegPartitions[i][j]]);
+            if(debug.debug_rest_positions){
+                debug.rest_spheres_and_radiuses.push_back({restPosition.x,restPosition.y,restPosition.z,restRadius});
+            }
+            if(distance>restRadius){
+                variance += pow(distance-restRadius,2);
+                isTriggered = true;
+            }
+        }
+        if(LegPartitions[i].size()>0){
+            variance /= LegPartitions[i].size();
+        }
+        if(variance>max_variance){
+            max_index = i;
+            max_variance = variance;
+        }
+    }
+    if(isTriggered){
+        event_index = max_index;
+    }
+    return isTriggered;
+}
+
+void SpiderController::smoothHeight(bool average)
+{
     vec3 total_average={0,0,0};
     vec3 left_average={0,0,0};
     vec3 right_average={0,0,0};
@@ -117,6 +166,13 @@ void SpiderController::debug_draw(environment_structure environment){
             cgp::draw(debug.sphere,environment);
         }
     }
+    if(debug.debug_rest_positions){
+        for(auto sphere_params : debug.rest_spheres_and_radiuses){
+            debug.sphere.model.translation = sphere_params.xyz();
+            debug.sphere.model.scaling = sphere_params.w * 10;
+            cgp::draw(debug.sphere,environment);
+        }
+    }
 }
 
 void SpiderController::update(){
@@ -128,9 +184,11 @@ void SpiderController::update(){
     for(int i=0;i<min_iter;i++){
         handlePosition(params.maxDt);
         handleVelocity(params.maxDt);
+        animate(params.maxDt);
     }
     handlePosition(leftDt);
     handleVelocity(leftDt);
+    animate(dt);
 
 
     old_t = timer->t;
@@ -144,6 +202,14 @@ void SpiderController::update(){
     
 }
 
+
+void SpiderController::animate(float dt){
+    if(!eventQueue.isEvent){
+        if(isEventTriggered(eventQueue.event)){
+            std::cout << "Event" << std::endl;
+        }
+    }
+}
 
 
 
@@ -247,4 +313,12 @@ void SpiderController::idle_frame(environment_structure &environment, collision_
 void SpiderController::debug::reset_stick(){
     rays_to_draw.clear();
     rays_collision_pos.clear();
+}
+void SpiderController::debug::reset_rest(){
+    rest_spheres_and_radiuses.clear();
+}
+
+void SpiderController::debug::display_gui()
+{
+    ImGui::Checkbox("Display rest positions",&debug_rest_positions);
 }

@@ -223,7 +223,6 @@ void test_scene::display_frame(environment_structure &environment) {
         }
     }
     else if(gui.selected_scene==4){
-        SpiderCtrl.stick_to_ground(&cave, false);
         SpiderCtrl.update();
         cave.draw(environment);
         Spider2.draw(environment);
@@ -269,7 +268,7 @@ void test_scene::display_gui(){
         ImGui::Checkbox("Show Cave", &gui.show_cave);
     }
     else if(gui.selected_scene==4){
-
+        SpiderCtrl.debug.display_gui();
     }
 }
 

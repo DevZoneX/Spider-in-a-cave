@@ -12,6 +12,7 @@ class spider: public touchable_object
 public:
     enum leg {FrontLeft, FrontRight, MiddleLeft, MiddleRight, Middle2Left, Middle2Right, BackLeft, BackRight};
     enum bone {BaseBone, MiddleBone, FootBone};
+    typedef std::vector<std::vector<leg>> LegPartitions;
 private:
     float getBoneLength(leg whichLeg,bone whichBone);
     cgp::vec3 getRestPositionLocal(leg whichLeg);
@@ -48,6 +49,8 @@ public:
     vec3 getRightVector();
     vec3 getFrontVector();
     std::string getLegPrefix(leg whichLeg);
+
+    LegPartitions getLegPartitions();
 
     void set_rotation(rotation_transform _rotation);
     rotation_transform get_rotation();

@@ -20,7 +20,13 @@ class SpiderController
         std::vector<vec3> rays_collision_pos;
         mesh_drawable sphere;
 
+        bool debug_rest_positions = false;
+        std::vector<vec4> rest_spheres_and_radiuses;
+
         void reset_stick();
+        void reset_rest();
+
+        void display_gui();
     };
     struct params{
         spider::leg legs[NUM_LEGS] = {spider::FrontLeft,spider::FrontRight,spider::MiddleLeft,spider::MiddleRight,spider::Middle2Left,spider::Middle2Right,spider::BackLeft,spider::BackRight};
@@ -28,6 +34,7 @@ class SpiderController
         float RestPositionDistance = 1.5f;
         float acceleration = 0.9f;
         float maxSpeed = 0.8f;
+        float animationSpeed = 1.0f;
 
         float maxDt = 0.05;
 
@@ -36,6 +43,10 @@ class SpiderController
         int selected_keyboard = 1;
         std::string keyboards_control[KEYBOARD_LAYOUTS] = {"QWERTY","AZERTY","Keyboard Arrows"};
     };
+    struct EventQueue{
+        bool isEvent = false;
+        int event=0;
+    };
 private:
     //third_person_camera_controller camera_control;
     camera_controller_orbit camera_control;
@@ -43,7 +54,11 @@ private:
     spider* ControlledSpider;
     bool initialized = false;
     vec3 legPositions[NUM_LEGS];
+    vec3 targetLegPositions[NUM_LEGS];
+    float rest_displacement[NUM_LEGS];
     input_devices* inputs;
+    EventQueue eventQueue;
+    spider::LegPartitions LegPartitions;
 
     timer_basic* timer;
 
@@ -52,7 +67,12 @@ private:
     vec3 target_velocity;
     float old_t;
 
+
+    bool isEventTriggered(int &event_index);
+    float getRestRadius(spider::leg whichLeg){if(whichLeg==spider::BackLeft){return 0.2f;}return 0.2f;}
+
     void smoothHeight(bool average=false); // Function for smoothing out the position of the body according to the position of the legs
+    void animate(float dt);
 public:
     debug debug;
     SpiderController(){}
