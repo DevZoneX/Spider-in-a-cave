@@ -45,6 +45,7 @@ public:
     vec3 getLegPosition(leg whichLeg);
     vec3 getRestPosition(leg whichLeg);
     vec3 getRestPosition(leg whichLeg, float vx, float vy);
+    vec3 getRestPosition(leg whichLeg, float vx, float vy, float angle);
     vec3 getLegJoint(leg whichLeg);
     vec3 getUpVector();
     vec3 getRightVector();

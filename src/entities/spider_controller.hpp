@@ -30,10 +30,13 @@ class SpiderController
     };
     struct params{
         spider::leg legs[NUM_LEGS] = {spider::FrontLeft,spider::FrontRight,spider::MiddleLeft,spider::MiddleRight,spider::Middle2Left,spider::Middle2Right,spider::BackLeft,spider::BackRight};
-        float BodyHeight = 0.6f;
+        float BodyHeight = 0.5f;
         float RestPositionDistance = 1.5f;
-        float acceleration = 0.9f;
-        float maxSpeed = 0.8f;
+        float acceleration = 1.7f;
+        float maxSpeed = 1.2f;
+        float maxAngularVelocity = 0.7f;
+        float angularAcceleration = 1.5f;
+        float arcFactor = 0.4f;
         float maxLegElevation = 1.0f;
         float minLegElevation = -0.7f;
         float animationSpeed = 1.0f;
@@ -42,6 +45,8 @@ class SpiderController
         float maxDt = 0.04;
 
         float camera_max_distance = 4.0f;
+        float cameraK = 8.0f;
+        float cameraFriction = 3.0f;
         bool moveAllLegs = false;
 
         int selected_keyboard = 1;
@@ -75,6 +80,13 @@ private:
     vec3 position;
     vec3 velocity;
     vec3 target_velocity;
+
+    float angle=0;
+    float angular_velocity=0;
+    float target_angular_velocity=0;
+
+    vec3 cameraCenter;
+    vec3 cameraVelocity;
     float old_t;
 
 

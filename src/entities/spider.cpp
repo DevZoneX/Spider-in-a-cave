@@ -222,6 +222,28 @@ vec3 spider::getRestPosition(leg whichLeg, float vx, float vy){
     return getRestPosition(whichLeg) + 0.4*vx*getFrontVector()+ 0.4*vy*getRightVector();
 }
 
+vec3 spider::getRestPosition(leg whichLeg, float vx, float vy, float angle)
+{
+    vec3 position = getRestPosition(whichLeg,vx,vy);
+    float multiplier = 0.5f;
+    float middleMultiplier = 0.3f;
+    
+    if(whichLeg==FrontLeft || whichLeg==FrontRight){
+        position -= multiplier*getRightVector()*angle;
+    }
+    else if(whichLeg==BackLeft || whichLeg==BackLeft){
+        position += multiplier*getRightVector()*angle;
+    }
+    else if(whichLeg==MiddleLeft || whichLeg==MiddleLeft){
+        position -= middleMultiplier*multiplier*getRightVector()*angle;
+    }
+    else if(whichLeg==Middle2Left || whichLeg==Middle2Left){
+        position += middleMultiplier*multiplier*getRightVector()*angle;
+    }
+    
+    return position;
+}
+
 fabric* spider::getLegFabric(leg whichLeg){
     return &legFabric[whichLeg];
 }

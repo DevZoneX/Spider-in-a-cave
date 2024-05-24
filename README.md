@@ -35,5 +35,4 @@ The code is structured as following:
 ## Task List
 
  - Add crystals mesh and class
- - Finish Collisions
- - Then add Spider Controller
+ - Correct precision problems (float to double maybe)
