@@ -227,19 +227,26 @@ vec3 spider::getRestPosition(leg whichLeg, float vx, float vy, float angle)
     vec3 position = getRestPosition(whichLeg,vx,vy);
     float multiplier = 0.5f;
     float middleMultiplier = 0.3f;
+    float frontMultiplier = 0.7;
     
     if(whichLeg==FrontLeft || whichLeg==FrontRight){
         position -= multiplier*getRightVector()*angle;
     }
-    else if(whichLeg==BackLeft || whichLeg==BackLeft){
+    else if(whichLeg==BackLeft || whichLeg==BackRight){
         position += multiplier*getRightVector()*angle;
     }
-    else if(whichLeg==MiddleLeft || whichLeg==MiddleLeft){
+    else if(whichLeg==MiddleLeft || whichLeg==MiddleRight){
         position -= middleMultiplier*multiplier*getRightVector()*angle;
     }
-    else if(whichLeg==Middle2Left || whichLeg==Middle2Left){
+    else if(whichLeg==Middle2Left || whichLeg==Middle2Right){
         position += middleMultiplier*multiplier*getRightVector()*angle;
     }
+
+    if(whichLeg==FrontRight || whichLeg==BackRight || whichLeg==MiddleRight || whichLeg==Middle2Right){
+        frontMultiplier *= -1;
+    }
+    position += multiplier*frontMultiplier*getFrontVector()*angle;
+    
     
     return position;
 }
