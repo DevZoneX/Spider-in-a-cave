@@ -15,6 +15,8 @@ class organic_spider: public spider{
         organic_spider(){}
         ~organic_spider(){}
 
+
+        void initialize() override;
         float getBoneLength(leg whichLeg,bone whichBone) override;
 };
 

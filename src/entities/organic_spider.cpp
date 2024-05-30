@@ -1,5 +1,11 @@
 #include "organic_spider.hpp"
 
+
+
+bool organic_spider::textureInitialized = false;
+opengl_texture_image_structure organic_spider::texture;
+
+
 mesh organic_spider::getLegMesh(leg whichLeg, bone whichBone, float &scaling){
     float length = getBoneLength(whichLeg,whichBone);
     mesh mesh = mesh_primitive_cylinder(0.03f,{0,0,0},{0,length,0});
@@ -62,8 +68,55 @@ mesh organic_spider::getLegMesh(leg whichLeg, bone whichBone, float &scaling){
     return mesh;
 }
 
-bool organic_spider::textureInitialized = false;
-opengl_texture_image_structure organic_spider::texture;
+
+void organic_spider::initialize(){
+    mesh_drawable body;
+
+    if(!textureInitialized){
+        texture.load_and_initialize_texture_2d_on_gpu(getTexturePath(),GL_REPEAT,GL_REPEAT);
+        textureInitialized = true;
+    }
+
+    body.initialize_data_on_gpu(mesh_load_file_obj(project::path+"assets/spider/spider_body.obj"));
+    body.model.scaling = 1.5;
+    body.texture = texture;
+    spider_hierarchy.add(body,"body");
+
+    spider_hierarchy.add(mesh_drawable(),"leftc1","body");
+    spider_hierarchy.add(mesh_drawable(),"rightc1","body");
+    spider_hierarchy.add(mesh_drawable(),"leftc2","body");
+    spider_hierarchy.add(mesh_drawable(),"rightc2","body");
+
+
+
+    initializeLegHierarchy(FrontLeft, {0.27,0.24,-0.015});
+    initializeLegHierarchy(FrontRight, {0.27,0.24,-0.015});
+    initializeLegHierarchy(BackLeft, {-0.16,+0.26,-0.02});
+    initializeLegHierarchy(BackRight, {-0.16,+0.26,-0.02});
+    initializeLegHierarchy(MiddleLeft, {0.13,+0.32,-0.02});
+    initializeLegHierarchy(MiddleRight, {0.13,+0.32,-0.02});
+    initializeLegHierarchy(Middle2Left, {-0.02,+0.29,-0.02});
+    initializeLegHierarchy(Middle2Right, {-0.02,+0.29,-0.02});
+
+
+    initializeLegFabric(FrontRight);
+    initializeLegFabric(FrontLeft);
+    initializeLegFabric(BackLeft);
+    initializeLegFabric(BackRight);
+    initializeLegFabric(MiddleLeft);
+    initializeLegFabric(MiddleRight);
+    initializeLegFabric(Middle2Left);
+    initializeLegFabric(Middle2Right);
+
+    updateLegHierarchy(FrontLeft,"front_arm_left");
+    updateLegHierarchy(FrontRight,"front_arm_right");
+    updateLegHierarchy(BackLeft,"back_arm_left");
+    updateLegHierarchy(BackRight,"back_arm_right");
+    updateLegHierarchy(MiddleLeft,"middle_arm_left");
+    updateLegHierarchy(MiddleRight,"middle_arm_right");
+    updateLegHierarchy(Middle2Left,"middle_arm2_left");
+    updateLegHierarchy(Middle2Right,"middle_arm2_right");
+}
 
 void organic_spider::initializeLegHierarchy(leg whichLeg, vec3 bindPosition)
 {
@@ -83,30 +136,20 @@ void organic_spider::initializeLegHierarchy(leg whichLeg, vec3 bindPosition)
     bone3.initialize_data_on_gpu(getLegMesh(whichLeg,FootBone,scaling));
     bone3.model.scaling = scaling; scaling = 1;
 
-    if(!textureInitialized){
-        texture.load_and_initialize_texture_2d_on_gpu(getTexturePath(),GL_REPEAT,GL_REPEAT);
-        textureInitialized = true;
-    }
 
     
     bone1.texture = texture;
     bone2.texture = texture;
     bone3.texture = texture;
-    /*
-    bone2.texture.initialize_texture_2d_on_gpu(im,GL_REPEAT,GL_REPEAT);
-    bone3.texture.initialize_texture_2d_on_gpu(im,GL_REPEAT,GL_REPEAT);
-    */
 
     spider_hierarchy.add(mesh_drawable(),baseName+"_rest","body");
     spider_hierarchy.add(mesh_drawable(),baseName,"body");
     spider_hierarchy.add(bone1,baseName+"_articulation",baseName);
     
-    //spider_hierarchy.add(articulation,baseName+"2_articulation",baseName+"_articulation");
     spider_hierarchy.add(mesh_drawable(),baseName+"2_articulation",baseName+"_articulation");
     
     spider_hierarchy.add(bone2,baseName+"2",baseName+"2_articulation");
 
-    //spider_hierarchy.add(articulation,baseName+"3_articulation",baseName+"2");
     spider_hierarchy.add(mesh_drawable(),baseName+"3_articulation",baseName+"2");
 
     spider_hierarchy.add(bone3,baseName+"3",baseName+"3_articulation");
@@ -155,7 +198,7 @@ float organic_spider::getBoneLength(leg whichLeg, bone whichBone)
     }
     else if(whichLeg==MiddleLeft || whichLeg==MiddleRight){
         if(whichBone==BaseBone){
-            return 0.32f;
+            return 0.40f;
         }
         else if(whichBone==MiddleBone){
             return 0.37f;
@@ -167,7 +210,7 @@ float organic_spider::getBoneLength(leg whichLeg, bone whichBone)
     }
     else if(whichLeg==Middle2Left || whichLeg==Middle2Right){
         if(whichBone==BaseBone){
-            return 0.35f;
+            return 0.45f;
         }
         else if(whichBone==MiddleBone){
             return 0.37f;
