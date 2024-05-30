@@ -31,8 +31,25 @@ mesh organic_spider::getLegMesh(leg whichLeg, bone whichBone, float &scaling){
             scaling = length/0.45f;
         }
     }
+    else if(whichLeg==Middle2Left || whichLeg==Middle2Right){
+        if(whichBone==BaseBone){
+            mesh = mesh_load_file_obj(project::path+"assets/spider/legs/spider_middle2_1.obj");
+            scaling = length/0.37f;
+        }
+        else if(whichBone==MiddleBone){
+            mesh = mesh_load_file_obj(project::path+"assets/spider/legs/spider_middle2_2.obj");
+            scaling = length/0.37f;
+        }
+        else if(whichBone==FootBone){
+            mesh = mesh_load_file_obj(project::path+"assets/spider/legs/spider_middle2_3.obj");
+            scaling = length/0.45f;
+        }
+    }
     return mesh;
 }
+
+bool organic_spider::textureInitialized = false;
+opengl_texture_image_structure organic_spider::texture;
 
 void organic_spider::initializeLegHierarchy(leg whichLeg, vec3 bindPosition)
 {
@@ -52,14 +69,19 @@ void organic_spider::initializeLegHierarchy(leg whichLeg, vec3 bindPosition)
     bone3.initialize_data_on_gpu(getLegMesh(whichLeg,FootBone,scaling));
     bone3.model.scaling = scaling; scaling = 1;
 
-    if(!imageInitialized){
-        im = image_load_file(getTexturePath());
-        imageInitialized = true;
+    if(!textureInitialized){
+        texture.load_and_initialize_texture_2d_on_gpu(getTexturePath(),GL_REPEAT,GL_REPEAT);
+        textureInitialized = true;
     }
 
-    bone1.texture.initialize_texture_2d_on_gpu(im,GL_REPEAT,GL_REPEAT);
+    
+    bone1.texture = texture;
+    bone2.texture = texture;
+    bone3.texture = texture;
+    /*
     bone2.texture.initialize_texture_2d_on_gpu(im,GL_REPEAT,GL_REPEAT);
     bone3.texture.initialize_texture_2d_on_gpu(im,GL_REPEAT,GL_REPEAT);
+    */
 
     spider_hierarchy.add(mesh_drawable(),baseName+"_rest","body");
     spider_hierarchy.add(mesh_drawable(),baseName,"body");
@@ -127,11 +149,14 @@ float organic_spider::getBoneLength(leg whichLeg, bone whichBone)
         return 0.0;
     }
     else if(whichLeg==Middle2Left || whichLeg==Middle2Right){
-        if(whichBone==BaseBone || whichBone==FootBone){
+        if(whichBone==BaseBone){
             return 0.35f;
         }
         else if(whichBone==MiddleBone){
-            return 0.30f;
+            return 0.40f;
+        }
+        else if(whichBone==FootBone){
+            return 0.55f;
         }
         return 0.0;
     }

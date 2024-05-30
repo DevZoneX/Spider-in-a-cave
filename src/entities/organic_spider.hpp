@@ -6,8 +6,8 @@
 
 class organic_spider: public spider{
     protected:
-        bool imageInitialized = false;
-        image_structure im;
+        static bool textureInitialized;
+        static opengl_texture_image_structure texture;
         mesh getLegMesh(leg whichLeg, bone whichBone, float &scaling);
         void initializeLegHierarchy(leg whichLeg, vec3 bindPosition) override;
         std::string getTexturePath();
