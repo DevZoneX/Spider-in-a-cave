@@ -45,6 +45,20 @@ mesh organic_spider::getLegMesh(leg whichLeg, bone whichBone, float &scaling){
             scaling = length/0.45f;
         }
     }
+    else if(whichLeg==BackLeft || whichLeg==BackRight){
+        if(whichBone==BaseBone){
+            mesh = mesh_load_file_obj(project::path+"assets/spider/legs/spider_back_1.obj");
+            scaling = length/0.36f;
+        }
+        else if(whichBone==MiddleBone){
+            mesh = mesh_load_file_obj(project::path+"assets/spider/legs/spider_back_2.obj");
+            scaling = length/0.33f;
+        }
+        else if(whichBone==FootBone){
+            mesh = mesh_load_file_obj(project::path+"assets/spider/legs/spider_back_3.obj");
+            scaling = length/0.50f;
+        }
+    }
     return mesh;
 }
 
@@ -117,7 +131,7 @@ float organic_spider::getBoneLength(leg whichLeg, bone whichBone)
 {
      if(whichLeg==FrontLeft || whichLeg==FrontRight){
         if(whichBone==BaseBone){
-            return 0.28f;
+            return 0.40f;
         }
         else if(whichBone==MiddleBone){
             return 0.45f;
@@ -128,11 +142,14 @@ float organic_spider::getBoneLength(leg whichLeg, bone whichBone)
         return 0.0;
     }
     else if(whichLeg==BackLeft || whichLeg==BackRight){
-        if(whichBone==BaseBone || whichBone==FootBone){
-            return 0.45f;
+        if(whichBone==BaseBone){
+            return 0.40f;
         }
         else if(whichBone==MiddleBone){
-            return 0.35f;
+            return 0.38f;
+        }
+        else if(whichBone==FootBone){
+            return 0.65f;
         }
         return 0.0;
     }
@@ -141,7 +158,7 @@ float organic_spider::getBoneLength(leg whichLeg, bone whichBone)
             return 0.32f;
         }
         else if(whichBone==MiddleBone){
-            return 0.40f;
+            return 0.37f;
         }
         else if(whichBone==FootBone){
             return 0.60f;
@@ -153,7 +170,7 @@ float organic_spider::getBoneLength(leg whichLeg, bone whichBone)
             return 0.35f;
         }
         else if(whichBone==MiddleBone){
-            return 0.40f;
+            return 0.37f;
         }
         else if(whichBone==FootBone){
             return 0.55f;
