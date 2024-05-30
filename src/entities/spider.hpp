@@ -13,11 +13,10 @@ public:
     enum leg {FrontLeft, FrontRight, MiddleLeft, MiddleRight, Middle2Left, Middle2Right, BackLeft, BackRight};
     enum bone {BaseBone, MiddleBone, FootBone};
     typedef std::vector<std::vector<leg>> LegPartitions;
-private:
-    float getBoneLength(leg whichLeg,bone whichBone);
+protected:
     cgp::vec3 getRestPositionLocal(leg whichLeg);
 
-    void initializeLegHierarchy(leg whichLeg, vec3 bindPosition);
+    virtual void initializeLegHierarchy(leg whichLeg, vec3 bindPosition);
     void updateLegHierarchy(leg whichLeg, std::string baseName);
 
     fabric* getLegFabric(leg whichLeg);
@@ -33,11 +32,12 @@ public:
 
     vec3 translation = {0,0,0};
 
-    void initialize();
+    virtual void initialize();
 
     void draw(environment_structure environment);
 
     void updateGlobal();
+    virtual float getBoneLength(leg whichLeg,bone whichBone);
     void setLegPosition(leg whichLeg, vec3 target, bool debug=false);
     void updateTranslation(){spider_hierarchy["body"].transform_local.translation = translation;}
     void updateRotation(){spider_hierarchy["body"].transform_local.rotation = rotation;}

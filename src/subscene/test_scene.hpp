@@ -9,6 +9,7 @@
 
 #include "../entities/spider_controller.hpp"
 #include "../entities/spider.hpp"
+#include "../entities/organic_spider.hpp"
 #include "../map/cave_mesh.hpp"
 #include "../utils/key_positions_structure.hpp"
 #include "../utils/collision_object.hpp"
@@ -19,7 +20,7 @@ using namespace cgp;
 
 struct test_gui {
 
-    int selected_scene = 4;
+    int selected_scene = 0;
     int num_scenes = 5;
     const char* const listc[5] = {"Spider", "Colisions", "Partition and collisions", "Terrain and collisions", "Spider Controller"};
 
@@ -50,8 +51,8 @@ public:
     keyframe_structure col_positions;
     keyframe_structure col_positions_partition;
     keyframe_structure col_positions_scene3;
-    spider Spider;
-    spider Spider2;
+    organic_spider Spider;
+    organic_spider Spider2;
     SpiderController SpiderCtrl;
     collision_sphere* colsphere;
     collision_sphere* colsphere2;
