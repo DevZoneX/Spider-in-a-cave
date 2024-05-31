@@ -23,6 +23,11 @@ public:
     static int const terrain_sample = 300;
     static int const arch_sample = 200;
 
+    static bool initialized_textures;
+    static opengl_texture_image_structure texture;
+    static opengl_texture_image_structure normal_map_texture;
+    static opengl_shader_structure shader;
+
     int octave = 8;
     float persistency = 0.7;
     float frequency_gain = 1.5;

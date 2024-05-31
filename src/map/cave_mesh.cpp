@@ -7,7 +7,10 @@ cave_mesh::cave_mesh()
 
 }
 
-
+bool cave_mesh::initialized_textures = false;
+opengl_texture_image_structure cave_mesh::texture;
+opengl_texture_image_structure cave_mesh::normal_map_texture;
+opengl_shader_structure cave_mesh::shader;
 
 void cave_mesh::initialize(){
     cmesh_ground = mesh_primitive_grid({-1,-1,0},{1,-1,0},{1,1,0},{-1,1,0},terrain_sample,terrain_sample);
@@ -30,20 +33,27 @@ void cave_mesh::initialize(){
     //cmeshd_ground.model.rotation = rotation_axis_angle({1,0,0},-Pi/2);
     update_terrain();
 
-
-    cmeshd.texture.load_and_initialize_texture_2d_on_gpu(project::path + "assets/rock_face_comp.png",
+    if(!initialized_textures){
+        texture.load_and_initialize_texture_2d_on_gpu(project::path + "assets/rock_face_comp.png",
             GL_REPEAT,
             GL_REPEAT);
+        normal_map_texture.load_and_initialize_texture_2d_on_gpu(project::path + "assets/rock_face_normal_comp.png");
+        shader.load(project::path + "shaders/normal_map/mesh_normal.vert.glsl", project::path + "shaders/normal_map/mesh_normal.frag.glsl");
+        initialized_textures = true;
+    }
+
+
+    cmeshd.texture = texture;
+    cmeshd.supplementary_texture["image_texture_2"] = normal_map_texture;
     //glEnableVertexAttribArray(2); // Tangent
     //glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tangent));
     //glEnableVertexAttribArray(3); // Bitangent
     //glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, bitangent));
-    cmeshd.shader.load(project::path + "shaders/normal_map/mesh_normal.vert.glsl", project::path + "shaders/normal_map/mesh_normal.frag.glsl");
-    cmeshd_ground.shader.load(project::path + "shaders/normal_map/mesh_normal.vert.glsl", project::path + "shaders/normal_map/mesh_normal.frag.glsl");
-    cmeshd_ground.texture.load_and_initialize_texture_2d_on_gpu(project::path + "assets/rock_face_comp.png",
-            GL_REPEAT,
-            GL_REPEAT);
-    cmeshd_ground.supplementary_texture["image_texture_2"].load_and_initialize_texture_2d_on_gpu(project::path + "assets/rock_face_normal_comp.png");
+    cmeshd.shader = shader;
+    cmeshd_ground.shader = shader;
+    cmeshd_ground.texture = texture;
+    cmeshd_ground.supplementary_texture["image_texture_2"] = normal_map_texture;
+    
 
     cmeshd.material.phong.specular *= 0.2;
     cmeshd.material.phong.specular_exponent = 10;
@@ -164,7 +174,6 @@ void cave_mesh::update_terrain()
     for (int ku = 0; ku < N; ++ku) {
         for (int kv = 0; kv < N; ++kv) {
             int const idx = ku*N+kv;
-            cmesh.normal[idx] *= -1;
             int idx2;
             int idx3;
 
