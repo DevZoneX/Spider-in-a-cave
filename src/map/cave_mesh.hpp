@@ -15,6 +15,9 @@ private:
     cgp::mesh cmesh_ground;
     cgp::mesh_drawable cmeshd_ground;
 
+    cgp::mesh cmesh_wall1;
+    cgp::mesh_drawable cmeshd_wall1;
+
 
 public:
     cave_mesh();
@@ -22,6 +25,7 @@ public:
 
     static int const terrain_sample = 300;
     static int const arch_sample = 200;
+    static int const wall_sample = 150;
 
     static bool initialized_textures;
     static opengl_texture_image_structure texture;
