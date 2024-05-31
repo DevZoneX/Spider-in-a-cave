@@ -65,7 +65,12 @@ bool SpiderController::isEventTriggered(int &event_index)
         for(int j=0;j<LegPartitions[i].size();j++){
             float restRadius = getRestRadius(LegPartitions[i][j]);
             vec3 restPosition = ControlledSpider->getRestPosition(LegPartitions[i][j],vx,vy,angular_velocity) + rest_displacement[LegPartitions[i][j]] * ControlledSpider->getUpVector();
-            float distance = norm(restPosition - legPositions[LegPartitions[i][j]]);
+            vec3 diff = restPosition - legPositions[LegPartitions[i][j]];
+            float upProjection = dot(diff, ControlledSpider->getUpVector());
+            if(upProjection>params.LegsRestPositionUpThreshold){upProjection=params.LegsRestPositionUpThreshold;}
+            if(upProjection<-params.LegsRestPositionUpThreshold){upProjection=-params.LegsRestPositionUpThreshold;}
+            diff -= upProjection * ControlledSpider->getUpVector();
+            float distance = norm(diff);
             if(debug.debug_rest_positions){
                 debug.rest_spheres_and_radiuses.push_back({restPosition.x,restPosition.y,restPosition.z,restRadius});
             }
@@ -158,21 +163,6 @@ void SpiderController::smoothHeight(bool average)
     rotation_transform yaw = rotation_transform::from_axis_angle(rotation_transform::from_quaternion(q)*initialUp,angle);
     ControlledSpider->set_rotation(yaw*rotation_transform::from_quaternion(q));
 
-    /*
-    vec3 initialFront = {1,0,0};
-    float angle = acos(dot(initialUp, upVector));
-    vec3 frontVec = ControlledSpider->getFrontVector();
-    rotation_transform rot1 = rotation_transform::from_axis_angle(temp,angle);
-    upVector = rot1 * initialUp;
-    initialFront = rot1*initialFront;
-    temp = cross(initialFront,frontVec);
-    if(norm(temp)<0.001){rot1 = rot1 * rotation_transform::from_axis_angle(upVector, Pi);}
-    else{
-        angle = acos(dot(initialFront, frontVec));
-        rot1 = rot1 * rotation_transform::from_axis_angle(temp,angle);
-    }
-    ControlledSpider->set_rotation(rot1);
-    */
     
 
     upVector = ControlledSpider->getUpVector();
@@ -182,24 +172,31 @@ void SpiderController::smoothHeight(bool average)
             ControlledSpider->translation = total_average + upVector*params.BodyHeight;
         }
         else{
-            ControlledSpider->translation = position;
+            //ControlledSpider->translation = position;
+            ControlledSpider->translation = position + height * ControlledSpider->getUpVector();
             vec3 target_pos = total_average + upVector*params.BodyHeight;
-            vec3 diff = target_pos - ControlledSpider->translation;
+            vec3 diffpos = target_pos - position;
+            float valuepos = dot(diffpos,ControlledSpider->getUpVector());
+            position += valuepos * ControlledSpider->getUpVector();
+            vec3 diff = position - ControlledSpider->translation;
             float value = dot(diff,ControlledSpider->getUpVector());
-            ControlledSpider->translation += value * ControlledSpider->getUpVector();
+            height = -value;
+            ControlledSpider->translation = position + height * ControlledSpider->getUpVector();
         }
         
     }
     collision_ray ray(ControlledSpider->translation,ControlledSpider->getUpVector());
-    position = ControlledSpider->translation;
+    //position = ControlledSpider->translation;
     ray.color = {0.7,0,1};
-    debug.rays_to_draw.push_back(ray);
+    if(debug.debug_stick_to_ground){
+        debug.rays_to_draw.push_back(ray);
+    }
 }
 
 void SpiderController::debug_draw(environment_structure environment){
     if(debug.debug_stick_to_ground){
         for(auto ray : debug.rays_to_draw){
-        ray.draw(environment);
+            ray.draw(environment);
         }
         for(auto pos : debug.rays_collision_pos){
             debug.sphere.model.translation = pos;
@@ -210,6 +207,18 @@ void SpiderController::debug_draw(environment_structure environment){
         for(auto sphere_params : debug.rest_spheres_and_radiuses){
             debug.sphere.model.translation = sphere_params.xyz();
             debug.sphere.model.scaling = sphere_params.w * 10;
+            debug.sphere.material.color = {1,1,1};
+            cgp::draw(debug.sphere,environment);
+        }
+    }
+    if(debug.debug_projection){
+        for(auto ray : debug.projection_new_position_ray_detections){
+            ray.draw(environment);
+        }
+        for(auto point : debug.projection_collision_points){
+            debug.sphere.model.translation = point;
+            debug.sphere.model.scaling = 0.2f;
+            debug.sphere.material.color = {0.2f,0,0};
             cgp::draw(debug.sphere,environment);
         }
     }
@@ -233,16 +242,18 @@ void SpiderController::update(collision_object* col){
     ControlledSpider->updateRotation();
     smoothHeight();
 
+    
+
+
 
     old_t = timer->t;
-    ControlledSpider->translation = position;
+    //ControlledSpider->translation = position;
     ControlledSpider->updateTranslation();
     ControlledSpider->updateRotation();
     ControlledSpider->updateGlobal();
     for(int i=0;i<NUM_LEGS;i++){
         ControlledSpider->setLegPosition(params.legs[i],legPositions[params.legs[i]]);
     }
-    
 }
 
 
@@ -263,8 +274,14 @@ void SpiderController::animate(float dt,collision_object* col){
                 vec3 temp;
                 if(col->does_collide(&ray,temp)){
                     targetLegPositions[leg] = temp;
+                    ray.color = {1,0.5,0.5};
+                    if(debug.debug_projection){debug.projection_collision_points.push_back(temp);}
                     rest_displacement[leg] = dot(temp-ControlledSpider->getRestPosition(leg,vx,vy,angular_velocity),ControlledSpider->getUpVector());
                 }
+                else{
+                    std::cout << "Anomaly : "<< ray.translation << "\t" << ray.director << std::endl;
+                }
+                if(debug.debug_projection){debug.projection_new_position_ray_detections.push_back(ray);}
             }
         }
     }
@@ -304,6 +321,8 @@ void SpiderController::handleVelocity(float dt){
         angular_velocity+=params.angularAcceleration*angular_diff*dt;
     }
 
+    height_velocity += -params.heightFriction * height_velocity * dt + params.heightAcceleration * (-height) * dt;
+
 
 
     vec3 diff = target_velocity - velocity;
@@ -321,6 +340,7 @@ void SpiderController::handlePosition(float dt){
     position = position + dt*velocity;
     angle = angle + dt*angular_velocity;
     cameraCenter += dt*cameraVelocity;
+    height += height_velocity * dt;
 }
 
 // Controls input
@@ -342,6 +362,9 @@ void SpiderController::idle_frame(environment_structure &environment, collision_
     bool left=false;
     bool right=false;
     vec3 direction = {0,0,0};
+    if(inputs->keyboard.is_pressed('t')){
+        height = 0.5;
+    }
     if(params.selected_keyboard==0){
         forward = inputs->keyboard.is_pressed('w');
         backward = inputs->keyboard.is_pressed('s');
@@ -434,15 +457,22 @@ void SpiderController::debug::reset_rest(){
     rest_spheres_and_radiuses.clear();
 }
 
+void SpiderController::debug::reset_projection(){
+    projection_new_position_ray_detections.clear();
+    projection_collision_points.clear();
+}
+
 void SpiderController::debug::display_gui()
 {
     ImGui::Checkbox("Display directional rays",&debug_stick_to_ground);
     bool reset_rays = ImGui::Button("Reset rays",{200,30});
     if(reset_rays){
         reset_stick();
+        reset_projection();
     }
 
     ImGui::Checkbox("Display rest positions",&debug_rest_positions);
+    ImGui::Checkbox("Display projections",&debug_projection);
 }
 
 

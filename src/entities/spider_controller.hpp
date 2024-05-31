@@ -23,16 +23,24 @@ class SpiderController
         bool debug_rest_positions = false;
         std::vector<vec4> rest_spheres_and_radiuses;
 
+        bool debug_projection = false;
+        std::vector<collision_ray> projection_new_position_ray_detections;
+        std::vector<vec3> projection_collision_points;
+
         void reset_stick();
         void reset_rest();
+        void reset_projection();
 
         void display_gui();
     };
     struct params{
         spider::leg legs[NUM_LEGS] = {spider::FrontLeft,spider::FrontRight,spider::MiddleLeft,spider::MiddleRight,spider::Middle2Left,spider::Middle2Right,spider::BackLeft,spider::BackRight};
-        float BodyHeight = 0.5f;
+        float BodyHeight = 0.6f;
         float RestPositionDistance = 1.5f;
+        float LegsRestPositionUpThreshold = 0.9f;
         float acceleration = 1.7f;
+        float heightAcceleration = 30.5f;
+        float heightFriction = 10.0f;
         float maxSpeed = 1.2f;
         float maxAngularVelocity = 0.7f;
         float angularAcceleration = 1.5f;
@@ -42,7 +50,7 @@ class SpiderController
         float animationSpeed = 1.0f;
         float animationHeight = 0.2f;
 
-        float maxDt = 0.04;
+        float maxDt = 0.02;
 
         float camera_max_distance = 4.0f;
         float cameraK = 8.0f;
@@ -80,6 +88,9 @@ private:
     vec3 position;
     vec3 velocity;
     vec3 target_velocity;
+
+    float height = 0;
+    float height_velocity = 0;
 
     float angle=0;
     float angular_velocity=0;

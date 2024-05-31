@@ -20,7 +20,7 @@ using namespace cgp;
 
 struct test_gui {
 
-    int selected_scene = 0;
+    int selected_scene = 4;
     int num_scenes = 5;
     const char* const listc[5] = {"Spider", "Colisions", "Partition and collisions", "Terrain and collisions", "Spider Controller"};
 

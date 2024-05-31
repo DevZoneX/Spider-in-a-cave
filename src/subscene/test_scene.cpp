@@ -87,6 +87,9 @@ void test_scene::initialize(input_devices& _inputs, window_structure& window){
 
     cpart = new collision_partition({2,2,2},{0,0,0});
 
+    col_positions_scene3.key_positions[0] = {-0.061239,-0.551634,10.954695};
+    col_positions_scene3.key_positions[1] = col_positions_scene3.key_positions[0] + vec3({0.274187,-0.217219,1.663622});
+
 
 
     cave.initialize();
@@ -266,6 +269,14 @@ void test_scene::display_gui(){
     }
     else if(gui.selected_scene==3){
         ImGui::Checkbox("Show Cave", &gui.show_cave);
+        colray->translation = col_positions_scene3.key_positions[0];
+        colray->director = col_positions_scene3.key_positions[1] - col_positions_scene3.key_positions[0];
+        float v[3] = {colray->translation.x,colray->translation.y,colray->translation.z};
+        float w[3] = {colray->director.x,colray->director.y,colray->director.z};
+        ImGui::InputFloat3("Ray Start",v);
+        ImGui::InputFloat3("Ray Director",w);
+        col_positions_scene3.key_positions[0] = {v[0],v[1],v[2]};
+        col_positions_scene3.key_positions[1] = col_positions_scene3.key_positions[0] + vec3({w[0],w[1],w[2]});
     }
     else if(gui.selected_scene==4){
         SpiderCtrl.debug.display_gui();

@@ -23,7 +23,7 @@ void cave_mesh::initialize(){
 
 
 
-    partition = new collision_partition({1.2,1.2,1.2});
+    partition = new collision_partition({1.2,1.2,1.3});
     collision_handler::initialize(partition);
 
 

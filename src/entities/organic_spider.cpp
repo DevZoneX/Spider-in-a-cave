@@ -94,7 +94,7 @@ void organic_spider::initialize(){
     initializeLegHierarchy(BackLeft, {-0.16,+0.26,-0.02});
     initializeLegHierarchy(BackRight, {-0.16,+0.26,-0.02});
     initializeLegHierarchy(MiddleLeft, {0.13,+0.32,-0.02});
-    initializeLegHierarchy(MiddleRight, {0.13,+0.32,-0.02});
+    initializeLegHierarchy(MiddleRight, {0.14,+0.27,-0.02});
     initializeLegHierarchy(Middle2Left, {-0.02,+0.29,-0.02});
     initializeLegHierarchy(Middle2Right, {-0.02,+0.29,-0.02});
 
