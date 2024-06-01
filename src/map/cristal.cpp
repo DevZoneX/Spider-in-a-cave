@@ -50,6 +50,11 @@ void cristal_ram::draw(environment_structure environment){
 
 vec3 cristal_ram::getLightPosition()
 {
-    return vec3();
+    vec3 up = {0,0,1};
+    up = scaling_xyz * up;
+    up = rotation * up;
+    up = scaling * up;
+    up *= 0.9;
+    return translation + up;
 }
 

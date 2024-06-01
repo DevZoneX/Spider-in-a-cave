@@ -55,6 +55,7 @@ void scene_structure::display_frame()
     environment.uniform_generic.uniform_float["time"] = timer.t;
     environment.uniform_generic.uniform_int["is_cartoon"] = gui.is_cartoon ? 1 : 0;
     environment.uniform_generic.uniform_int["cartoon_levels"] = gui.cartoon_levels;
+	
     debug_timer.update();
 
 	// conditional display of the global frame (set via the GUI)
