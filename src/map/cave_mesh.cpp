@@ -36,8 +36,9 @@ void cave_mesh::initialize(){
     cmeshd_wall2.model.scaling_xyz = {1,length,1};
 
 
-
-    partition = new collision_partition({1.2,1.2,1.3});
+    if(partition==NULL){
+        partition = new collision_partition({1.2,1.2,1.3});   
+    }
     collision_handler::initialize(partition);
 
 
@@ -82,6 +83,11 @@ void cave_mesh::initialize(){
 
     cmeshd_wall1.material = cmeshd_ground.material;
     cmeshd_wall2.material = cmeshd_ground.material;
+}
+
+void cave_mesh::initialize(collision_partition *_partition){
+    partition = _partition;
+    initialize();
 }
 
 cave_mesh::~cave_mesh(){
@@ -154,32 +160,34 @@ void cave_mesh::update_terrain()
             float const noise2 = noise_perlin({u+1, length*v/2+1}, octave, persistency, frequency_gain);
 
             // use the noise as height value
-            float dr = 0.2*terrain_height*noise;
-            float dr2 = 0.2*terrain_height*noise2;
+            float dr = 0.3*terrain_height*noise;
+            float dr2 = 0.3*terrain_height*noise2;
 
             float x=u,y=v,offset,offset2,offsetz;
-            int multx=1,multz=1;
+            float multx=1,multz=1;
             if(u<0.5){multx = -1;}
             if(v<0.5){multz = -1;}
+            multx *= 1.05;
+            multz *= 1.07;
 
-            offset = +1.3;
-            offset2 = 1.3;
-            offsetz = 0.18;
+            offset = +1.22;
+            offset2 = 1.22;
+            offsetz = 0.17;
 
             x = x-0.5;
             y = y-0.5;
 
             float norm = sqrt(x*x+y*y);
 
-            float size_mult = 0.75;
+            float size_mult = 0.70;
 
             cmesh_wall1.position[idx].x = multx*size_mult*(log(fabs(u-0.5)+0.3)+1.2039);
-            cmesh_wall1.position[idx].y = offset+dr-1.3*norm;
+            cmesh_wall1.position[idx].y = offset+dr-1.35*norm;
             cmesh_wall1.position[idx].z = offsetz + multz*size_mult*(log(fabs(v-0.5)+0.3)+1.2039);
             
             cmesh_wall2.position[idx].x = -multx*size_mult*(log(fabs(u-0.5)+0.3)+1.2039);
-            cmesh_wall2.position[idx].y = -(offset2+dr2-1.3*norm);
-            cmesh_wall2.position[idx].z = offsetz + multz*size_mult*(log(fabs(v-0.5)+0.3)+1.2039);
+            cmesh_wall2.position[idx].y = -(offset2+dr2-1.35*norm);
+            cmesh_wall2.position[idx].z = offsetz -0.03 + multz*size_mult*(log(fabs(v-0.5)+0.3)+1.2039);
 
             tangents_wall1.push_back({0,1,0});
             bitangents_wall1.push_back({1,0,0});

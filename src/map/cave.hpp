@@ -3,11 +3,14 @@
 
 #include "../environment.hpp"
 #include "cave_mesh.hpp"
+#include "cristal.hpp"
 
-class cave
+class cave: public collision_handler
 {
 private:
     cave_mesh CaveMesh;
+
+    cristal_ram cristal1;
 public:
     cave();
 

@@ -56,6 +56,7 @@ public:
     float length = 2;
 
     void initialize();
+    void initialize(collision_partition *_partition);
     void draw(environment_structure environment);
     void update_terrain();
 };

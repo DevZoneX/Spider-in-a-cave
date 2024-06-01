@@ -10,7 +10,7 @@
 #include "../entities/spider_controller.hpp"
 #include "../entities/spider.hpp"
 #include "../entities/organic_spider.hpp"
-#include "../map/cave_mesh.hpp"
+#include "../map/cave.hpp"
 #include "../utils/key_positions_structure.hpp"
 #include "../utils/collision_object.hpp"
 #include "../utils/collision_handler.hpp"
@@ -64,7 +64,7 @@ public:
 
     collision_partition *cpart;
     partition_coordinates C;
-    cave_mesh cave;
+    cave cave_obj;
 
 
 

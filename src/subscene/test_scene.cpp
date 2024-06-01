@@ -92,9 +92,9 @@ void test_scene::initialize(input_devices& _inputs, window_structure& window){
 
 
 
-    cave.initialize();
+    cave_obj.initialize();
     SpiderCtrl.initialize(&Spider2,&timer,_inputs,window);
-    SpiderCtrl.stick_to_ground(&cave);
+    SpiderCtrl.stick_to_ground(&cave_obj);
 }
 
 void test_scene::display_frame(environment_structure &environment) {
@@ -212,7 +212,7 @@ void test_scene::display_frame(environment_structure &environment) {
     }
     else if(gui.selected_scene==3){
         if(gui.show_cave){
-            cave.draw(environment);
+            cave_obj.draw(environment);
         }
         colray->translation = col_positions_scene3.key_positions[0];
         colray->director = col_positions_scene3.key_positions[1] - col_positions_scene3.key_positions[0];
@@ -220,14 +220,14 @@ void test_scene::display_frame(environment_structure &environment) {
         col_positions_scene3.display_key_positions(environment);
 
         vec3 temp;
-        if(cave.does_collide(colray,temp)){
+        if(cave_obj.does_collide(colray,temp)){
             sphere.model.translation = temp;
             draw(sphere,environment);
         }
     }
     else if(gui.selected_scene==4){
-        SpiderCtrl.update(&cave);
-        cave.draw(environment);
+        SpiderCtrl.update(&cave_obj);
+        cave_obj.draw(environment);
         Spider2.draw(environment);
         SpiderCtrl.debug_draw(environment);
     }
@@ -319,7 +319,7 @@ void test_scene::action_keyboard(environment_structure &environment){
 void test_scene::idle_frame(environment_structure &environment){
     camera_control.idle_frame(environment.camera_view);
     if(gui.selected_scene==4){
-        SpiderCtrl.idle_frame(environment, &cave);
+        SpiderCtrl.idle_frame(environment, &cave_obj);
     }
 }
 
