@@ -8,6 +8,14 @@ using namespace cgp;
 // This file contains variables defining your global scene environment.
 // ********************************************************************* //
 
+struct light_params{
+	light_params(vec3 pos, vec3 col, float dist, float inte){position=pos;color=col;distance=dist;intensity=inte;}
+	light_params(){};
+	vec3 position;
+	vec3 color={1,1,1};
+	float distance=5.0f;
+	float intensity=0.0f;
+};
 
 // An environment structure contains variables that are needed to the drawing of an element in the scene, but that are not related to a particular shape or mesh.
 // The environment contains typically the camera and the light.
@@ -22,8 +30,13 @@ struct environment_structure : environment_generic_structure
 	// A projection structure (perspective or orthogonal projection)
 	mat4 camera_projection;
 
+	// Use multiple lights
+	bool multiLight = false;
 	// The position of a light
 	vec3 light = {1,1,1};
+
+	const int max_lights = 8; // If you change this value, you must change it also in the shaders
+	std::vector<light_params> lights;
 
 	// Additional uniforms that can be attached to the environment if needed (empty by default)
 	uniform_generic_structure uniform_generic;

@@ -62,6 +62,92 @@ struct material_structure
 
 uniform material_structure material;
 
+uniform bool multilight = false;
+
+uniform vec3 light_0_pos;
+uniform vec3 light_1_pos;
+uniform vec3 light_2_pos;
+uniform vec3 light_3_pos;
+uniform vec3 light_4_pos;
+uniform vec3 light_5_pos;
+uniform vec3 light_6_pos;
+uniform vec3 light_7_pos;
+
+uniform vec3 light_0_color;
+uniform vec3 light_1_color;
+uniform vec3 light_2_color;
+uniform vec3 light_3_color;
+uniform vec3 light_4_color;
+uniform vec3 light_5_color;
+uniform vec3 light_6_color;
+uniform vec3 light_7_color;
+
+uniform float light_0_dist;
+uniform float light_1_dist;
+uniform float light_2_dist;
+uniform float light_3_dist;
+uniform float light_4_dist;
+uniform float light_5_dist;
+uniform float light_6_dist;
+uniform float light_7_dist;
+
+uniform float light_0_intensity;
+uniform float light_1_intensity;
+uniform float light_2_intensity;
+uniform float light_3_intensity;
+uniform float light_4_intensity;
+uniform float light_5_intensity;
+uniform float light_6_intensity;
+uniform float light_7_intensity;
+
+struct light_params{
+	vec3 position;
+	vec3 color;
+	float distance;
+	float intensity;
+};
+int num_light = 8;
+light_params lights[8] = light_params[](
+	light_params(light_0_pos,light_0_color,light_0_dist,light_0_intensity),
+	light_params(light_1_pos,light_1_color,light_1_dist,light_1_intensity),
+	light_params(light_2_pos,light_2_color,light_2_dist,light_2_intensity),
+	light_params(light_3_pos,light_3_color,light_3_dist,light_3_intensity),
+	light_params(light_4_pos,light_4_color,light_4_dist,light_4_intensity),
+	light_params(light_5_pos,light_5_color,light_5_dist,light_5_intensity),
+	light_params(light_6_pos,light_6_color,light_6_dist,light_6_intensity),
+	light_params(light_7_pos,light_7_color,light_7_dist,light_7_intensity)
+	);
+
+
+vec3 computeColorWithLights(vec3 color_object,vec3 N,vec3 camera_position,vec3 fragment_position,float Ka,float Kd,float Ks,float specular_exponent){
+	vec3 color_shading = Ka * color_object;
+	for(int i=0;i<num_light;i++){
+		// Unit direction toward the light
+		vec3 L = normalize(lights[i].position-fragment.position);
+		float distance = length(lights[i].position-fragment.position);
+
+		// Diffuse coefficient
+		float diffuse_component = max(dot(N,L),0.0);
+
+		float lightIntensity = 0;
+		if(lights[i].distance>=distance) {
+			lightIntensity = lights[i].intensity * (lights[i].distance-distance)/lights[i].distance;
+		}
+
+		// Specular coefficient
+		float specular_component = 0.0;
+		if(diffuse_component>0.0){
+			vec3 R = reflect(-L,N); // reflection of light vector relative to the normal.
+			vec3 V = normalize(camera_position-fragment.position);
+			specular_component = pow( max(dot(R,V),0.0), material.phong.specular_exponent );
+		}
+		vec3 toAdd = ( Kd * diffuse_component) * lights[i].color * color_object + Ks * specular_component * lights[i].color;
+		toAdd = lightIntensity * toAdd;
+		color_shading += toAdd;
+	}
+
+	return color_shading;
+}
 
 void main()
 {
@@ -83,19 +169,9 @@ void main()
 	// Phong coefficient (diffuse, specular)
 	// *************************************** //
 
-	// Unit direction toward the light
-	vec3 L = normalize(light-fragment.position);
 
-	// Diffuse coefficient
-	float diffuse_component = max(dot(N,L),0.0);
-
-	// Specular coefficient
-	float specular_component = 0.0;
-	if(diffuse_component>0.0){
-		vec3 R = reflect(-L,N); // reflection of light vector relative to the normal.
-		vec3 V = normalize(camera_position-fragment.position);
-		specular_component = pow( max(dot(R,V),0.0), material.phong.specular_exponent );
-	}
+	
+	
 
 	// Texture
 	// *************************************** //
@@ -122,7 +198,28 @@ void main()
 	float Ka = material.phong.ambient;
 	float Kd = material.phong.diffuse;
 	float Ks = material.phong.specular;
-	vec3 color_shading = (Ka + Kd * diffuse_component) * color_object + Ks * specular_component * vec3(1.0, 1.0, 1.0);
+	vec3 color_shading;
+
+	if(!multilight){
+		// Unit direction toward the light
+		vec3 L = normalize(light-fragment.position);
+
+		// Diffuse coefficient
+		float diffuse_component = max(dot(N,L),0.0);
+
+		// Specular coefficient
+		float specular_component = 0.0;
+		if(diffuse_component>0.0){
+			vec3 R = reflect(-L,N); // reflection of light vector relative to the normal.
+			vec3 V = normalize(camera_position-fragment.position);
+			specular_component = pow( max(dot(R,V),0.0), material.phong.specular_exponent );
+		}
+		color_shading = (Ka + Kd * diffuse_component) * color_object + Ks * specular_component * vec3(1.0, 1.0, 1.0);
+	
+	}
+	else{
+		color_shading = computeColorWithLights(color_object,N,camera_position,fragment.position,Ka,Kd,Ks,material.phong.specular_exponent);
+	}
 	
 	// Output color, with the alpha component
 	FragColor = vec4(color_shading, material.alpha * color_image_texture.a);

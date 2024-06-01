@@ -48,6 +48,7 @@ void scene_structure::display_frame()
 
 	// Set the light to the current position of the camera
 	environment.light = {0,0,0.5};//camera_control.camera_model.position();
+	environment.lights.clear();
 
 	// Update time
 	timer.update();

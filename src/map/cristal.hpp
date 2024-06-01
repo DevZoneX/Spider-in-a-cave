@@ -17,6 +17,11 @@ public:
 
     mesh_drawable toDraw;
 
+    float intensity = 1.5;
+    float distance = 7;
+
+    vec3 color = {1,1,1};
+
 
     vec3 lightColor={1,1,1};
     float lightDistance;
@@ -27,6 +32,7 @@ public:
     void update();
     virtual void draw(environment_structure environment){if(environment.light.x==0){}}
     virtual vec3 getLightPosition(){return translation;}
+    virtual light_params getLightParams();
 };
 
 class cristal_ram: public cristal{
@@ -36,9 +42,10 @@ public:
     static mesh_drawable cristald;
     static bool initialized;
 
+    cristal_ram();
+
 
     void initialize() override;
     void draw(environment_structure environment) override;
     vec3 getLightPosition() override;
-    
 };

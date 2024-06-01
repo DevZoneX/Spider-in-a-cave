@@ -27,6 +27,23 @@ void environment_structure::send_opengl_uniform(opengl_shader_structure const& s
 	opengl_uniform(shader, "projection", camera_projection, expected);
 	opengl_uniform(shader, "view", camera_view, expected);
 	opengl_uniform(shader, "light", light, false);
+	opengl_uniform(shader, "multilight", multiLight, false);
+
+
+	for(int i=0;i<max_lights;i++){
+		if(i<lights.size()){
+			opengl_uniform(shader, "light_"+str(i)+"_pos", lights[i].position, false);
+			opengl_uniform(shader, "light_"+str(i)+"_color", lights[i].color, false);
+			opengl_uniform(shader, "light_"+str(i)+"_dist", lights[i].distance, false);
+			opengl_uniform(shader, "light_"+str(i)+"_intensity", lights[i].intensity, false);
+		}
+		else{
+			opengl_uniform(shader, "light_"+str(i)+"_pos", vec3({0,0,0}), false);
+			opengl_uniform(shader, "light_"+str(i)+"_color", vec3({0,0,0}), false);
+			opengl_uniform(shader, "light_"+str(i)+"_dist", 1.0f, false);
+			opengl_uniform(shader, "light_"+str(i)+"_intensity", 0.0f, false);
+		}
+	}
 
 	uniform_generic.send_opengl_uniform(shader, false);
 

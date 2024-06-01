@@ -28,10 +28,20 @@ void cristal::update(){
     toDraw.material.phong.specular_exponent = 40;
 }
 
+light_params cristal::getLightParams(){
+    return light_params(getLightPosition(),color,distance,intensity);
+}
+
 bool cristal_ram::initialized = false;
 mesh_drawable cristal_ram::cristald;
 void cristal_ram::chooseTexture(){
     toDraw.texture = cristal::texture_purple;
+}
+cristal_ram::cristal_ram(){
+    intensity = 1.5;
+    distance = 7;
+
+    color = {1,0.5,1};
 }
 void cristal_ram::initialize()
 {

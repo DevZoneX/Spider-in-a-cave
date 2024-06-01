@@ -19,7 +19,9 @@ void cave::initialize(){
     collision_handler::initialize(partition);
 }
 
-void cave::draw(environment_structure environment){
+void cave::draw(environment_structure &environment){
+    environment.multiLight = true;
+    environment.lights.push_back(cristal1.getLightParams());
     CaveMesh.draw(environment);
     cristal1.draw(environment);
 }

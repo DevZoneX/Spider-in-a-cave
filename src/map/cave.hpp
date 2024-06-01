@@ -16,7 +16,7 @@ public:
 
     void initialize();
 
-    void draw(environment_structure environment);
+    void draw(environment_structure &environment);
 };
 
 #endif // CAVE_H
