@@ -16,18 +16,24 @@ void cave_mesh::initialize(){
     cmesh_ground = mesh_primitive_grid({-1,-1,0},{1,-1,0},{1,1,0},{-1,1,0},terrain_sample,terrain_sample);
     cmesh = mesh_primitive_grid({-1,-1,0},{1,-1,0},{1,1,0},{-1,1,0},arch_sample,arch_sample);
     cmesh_wall1 = mesh_primitive_grid({-1,-1,0},{1,-1,0},{1,1,0},{-1,1,0},wall_sample,wall_sample);
+    cmesh_wall2 = mesh_primitive_grid({-1,-1,0},{1,-1,0},{1,1,0},{-1,1,0},wall_sample,wall_sample);
     cmeshd.initialize_data_on_gpu(cmesh);
     cmeshd_ground.initialize_data_on_gpu(cmesh_ground);
     cmeshd_wall1.initialize_data_on_gpu(cmesh_wall1);
+    cmeshd_wall2.initialize_data_on_gpu(cmesh_wall2);
     cmeshd.model.scaling = 10 * scaling;
     cmeshd.model.translation = {0,0,scaling * 4.5/2};
     cmeshd.model.scaling_xyz = {1,length,1};
     cmeshd_ground.model.scaling = 10 * scaling;
     cmeshd_ground.model.translation = {0,0,scaling * (-11-r)/2};
     cmeshd_ground.model.scaling_xyz = {1,length,1};
+    
     cmeshd_wall1.model.scaling = 10 * scaling;
     cmeshd_wall1.model.translation = {0,0,scaling * 4.5/2};
     cmeshd_wall1.model.scaling_xyz = {1,length,1};
+    cmeshd_wall2.model.scaling = 10 * scaling;
+    cmeshd_wall2.model.translation = {0,0,scaling * 4.5/2};
+    cmeshd_wall2.model.scaling_xyz = {1,length,1};
 
 
 
@@ -54,6 +60,9 @@ void cave_mesh::initialize(){
     cmeshd_wall1.texture = texture;
     cmeshd_wall1.supplementary_texture["image_texture_2"] = normal_map_texture;
     cmeshd_wall1.shader = shader;
+    cmeshd_wall2.texture = texture;
+    cmeshd_wall2.supplementary_texture["image_texture_2"] = normal_map_texture;
+    cmeshd_wall2.shader = shader;
     //glEnableVertexAttribArray(2); // Tangent
     //glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tangent));
     //glEnableVertexAttribArray(3); // Bitangent
@@ -72,6 +81,7 @@ void cave_mesh::initialize(){
     cmeshd_ground.material.phong.diffuse *= 0.6;
 
     cmeshd_wall1.material = cmeshd_ground.material;
+    cmeshd_wall2.material = cmeshd_ground.material;
 }
 
 cave_mesh::~cave_mesh(){
@@ -83,6 +93,7 @@ void cave_mesh::draw(environment_structure environment){
     cgp::draw(cmeshd,environment);
     cgp::draw(cmeshd_ground,environment);
     cgp::draw(cmeshd_wall1,environment);
+    cgp::draw(cmeshd_wall2,environment);
 }
 
 void cave_mesh::update_terrain()
@@ -100,6 +111,8 @@ void cave_mesh::update_terrain()
 
     numarray<vec3> tangents_wall1;
     numarray<vec3> bitangents_wall1;
+    numarray<vec3> tangents_wall2;
+    numarray<vec3> bitangents_wall2;
 
     // Recompute the new vertices
     for (int ku = 0; ku < N; ++ku) {
@@ -138,16 +151,19 @@ void cave_mesh::update_terrain()
 
             // Compute the Perlin noise
             float const noise = noise_perlin({u, length*v/2}, octave, persistency, frequency_gain);
+            float const noise2 = noise_perlin({u+1, length*v/2+1}, octave, persistency, frequency_gain);
 
             // use the noise as height value
             float dr = 0.2*terrain_height*noise;
+            float dr2 = 0.2*terrain_height*noise2;
 
-            float x=u,y=v,offset,offsetz;
+            float x=u,y=v,offset,offset2,offsetz;
             int multx=1,multz=1;
             if(u<0.5){multx = -1;}
             if(v<0.5){multz = -1;}
 
             offset = +1.3;
+            offset2 = 1.3;
             offsetz = 0.18;
 
             x = x-0.5;
@@ -160,9 +176,15 @@ void cave_mesh::update_terrain()
             cmesh_wall1.position[idx].x = multx*size_mult*(log(fabs(u-0.5)+0.3)+1.2039);
             cmesh_wall1.position[idx].y = offset+dr-1.3*norm;
             cmesh_wall1.position[idx].z = offsetz + multz*size_mult*(log(fabs(v-0.5)+0.3)+1.2039);
+            
+            cmesh_wall2.position[idx].x = -multx*size_mult*(log(fabs(u-0.5)+0.3)+1.2039);
+            cmesh_wall2.position[idx].y = -(offset2+dr2-1.3*norm);
+            cmesh_wall2.position[idx].z = offsetz + multz*size_mult*(log(fabs(v-0.5)+0.3)+1.2039);
 
             tangents_wall1.push_back({0,1,0});
             bitangents_wall1.push_back({1,0,0});
+            tangents_wall2.push_back({0,1,0});
+            bitangents_wall2.push_back({1,0,0});
         }
     }
 
@@ -185,6 +207,31 @@ void cave_mesh::update_terrain()
             bitangents_ground.push_back({1,0,0});
         }
     }
+    for (int ku = 0; ku < N_wall-1; ++ku) {
+        for (int kv = 0; kv < N_wall-1; ++kv) {
+            int const idx = ku*N_wall+kv;
+            int const idx2 = ku*N_wall+kv+1;
+            int const idx3 = (ku+1)*N_wall+kv;
+            int const idx4 = (ku+1)*N_wall+kv+1;
+
+            vec3 pos1 = cmeshd_wall1.model.scaling*cmeshd_wall1.model.scaling_xyz*cmesh.position[idx]+cmeshd_wall1.model.translation;
+            vec3 pos2 = cmeshd_wall1.model.scaling*cmeshd_wall1.model.scaling_xyz*cmesh.position[idx2]+cmeshd_wall1.model.translation;
+            vec3 pos3 = cmeshd_wall1.model.scaling*cmeshd_wall1.model.scaling_xyz*cmesh.position[idx3]+cmeshd_wall1.model.translation;
+            vec3 pos4 = cmeshd_wall1.model.scaling*cmeshd_wall1.model.scaling_xyz*cmesh.position[idx4]+cmeshd_wall1.model.translation;
+
+            partition->add_collision(new collision_triangle(pos1,pos2-pos1,pos4-pos1));
+            partition->add_collision(new collision_triangle(pos1,pos3-pos1,pos4-pos1));
+
+            pos1 = cmeshd_wall1.model.scaling*cmeshd_wall1.model.scaling_xyz*cmesh.position[idx]+cmeshd_wall1.model.translation;
+            pos2 = cmeshd_wall1.model.scaling*cmeshd_wall1.model.scaling_xyz*cmesh.position[idx2]+cmeshd_wall1.model.translation;
+            pos3 = cmeshd_wall1.model.scaling*cmeshd_wall1.model.scaling_xyz*cmesh.position[idx3]+cmeshd_wall1.model.translation;
+            pos4 = cmeshd_wall1.model.scaling*cmeshd_wall1.model.scaling_xyz*cmesh.position[idx4]+cmeshd_wall1.model.translation;
+
+            partition->add_collision(new collision_triangle(pos1,pos2-pos1,pos4-pos1));
+            partition->add_collision(new collision_triangle(pos1,pos3-pos1,pos4-pos1));
+        }
+    }
+
     for (int ku = 0; ku < N-1; ++ku) {
         for (int kv = 0; kv < N-1; ++kv) {
             int const idx = ku*N+kv;
@@ -223,6 +270,7 @@ void cave_mesh::update_terrain()
     cmesh.normal_update();
     cmesh_ground.normal_update();
     cmesh_wall1.normal_update();
+    cmesh_wall2.normal_update();
 
 
     for (int ku = 0; ku < N; ++ku) {
@@ -278,6 +326,9 @@ void cave_mesh::update_terrain()
 
             tangents_wall1[idx] = math::calculate_tangent(cmesh_wall1.position[idx],cmesh_wall1.position[idx2],cmesh_wall1.position[idx3],cmesh_wall1.uv[idx],cmesh_wall1.uv[idx2],cmesh_wall1.uv[idx3],cmesh_wall1.normal[idx]);
             bitangents_wall1[idx] = math::calculate_bitangent(tangents_wall1[idx],cmesh_wall1.normal[idx]);
+            
+            tangents_wall2[idx] = math::calculate_tangent(cmesh_wall2.position[idx],cmesh_wall2.position[idx2],cmesh_wall2.position[idx3],cmesh_wall2.uv[idx],cmesh_wall2.uv[idx2],cmesh_wall2.uv[idx3],cmesh_wall2.normal[idx]);
+            bitangents_wall2[idx] = math::calculate_bitangent(tangents_wall1[idx],cmesh_wall2.normal[idx]);
         }
     }
 
@@ -334,4 +385,10 @@ void cave_mesh::update_terrain()
     cmeshd_wall1.vbo_color.update(cmesh_wall1.color);
     cmeshd_wall1.initialize_supplementary_data_on_gpu(tangents_wall1,4);
     cmeshd_wall1.initialize_supplementary_data_on_gpu(bitangents_wall1,5);
+
+    cmeshd_wall2.vbo_position.update(cmesh_wall2.position);
+    cmeshd_wall2.vbo_normal.update(cmesh_wall2.normal);
+    cmeshd_wall2.vbo_color.update(cmesh_wall2.color);
+    cmeshd_wall2.initialize_supplementary_data_on_gpu(tangents_wall2,4);
+    cmeshd_wall2.initialize_supplementary_data_on_gpu(bitangents_wall2,5);
 }

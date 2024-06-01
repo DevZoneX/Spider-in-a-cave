@@ -17,6 +17,8 @@ private:
 
     cgp::mesh cmesh_wall1;
     cgp::mesh_drawable cmeshd_wall1;
+    cgp::mesh cmesh_wall2;
+    cgp::mesh_drawable cmeshd_wall2;
 
 
 public:
