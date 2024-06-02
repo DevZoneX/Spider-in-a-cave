@@ -20,9 +20,9 @@ using namespace cgp;
 
 struct test_gui {
 
-    int selected_scene = 4;
-    int num_scenes = 5;
-    const char* const listc[5] = {"Spider", "Colisions", "Partition and collisions", "Terrain and collisions", "Spider Controller"};
+    int selected_scene = 5;
+    int num_scenes = 6;
+    const char* const listc[6] = {"Spider", "Colisions", "Partition and collisions", "Terrain and collisions", "Spider Controller", "Cave Decorator"};
 
 
     float spider_rotation_around_x = 0;
@@ -34,6 +34,8 @@ struct test_gui {
     bool show_box_partition = false;
     bool show_triangle_partition = false;
     bool show_cave = true;
+
+    bool show_decorator = false;
 };
 
 
@@ -51,6 +53,7 @@ public:
     keyframe_structure col_positions;
     keyframe_structure col_positions_partition;
     keyframe_structure col_positions_scene3;
+    keyframe_structure col_positions_decorator;
     organic_spider Spider;
     organic_spider Spider2;
     SpiderController SpiderCtrl;
@@ -65,6 +68,9 @@ public:
     collision_partition *cpart;
     partition_coordinates C;
     cave cave_obj;
+
+    cristal_ram cristal_decorator;
+    float deco_z_rot = 0;
 
 
 

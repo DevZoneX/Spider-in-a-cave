@@ -58,6 +58,9 @@ void test_scene::initialize(input_devices& _inputs, window_structure& window){
     { {0,3,0}, {3,3,0} };
     col_positions_scene3.initialize(key_positions_ray);
 
+    numarray<vec3> key_positions_deco = {{0,0,0},{0,0,1}};
+    col_positions_decorator.initialize(key_positions_deco);
+
     Spider.initialize();
     Spider2.initialize();
 
@@ -90,7 +93,7 @@ void test_scene::initialize(input_devices& _inputs, window_structure& window){
     col_positions_scene3.key_positions[0] = {-0.061239,-0.551634,10.954695};
     col_positions_scene3.key_positions[1] = col_positions_scene3.key_positions[0] + vec3({0.274187,-0.217219,1.663622});
 
-
+    cristal_decorator.initialize();
 
     cave_obj.initialize();
     SpiderCtrl.initialize(&Spider2,&timer,_inputs,window);
@@ -98,9 +101,6 @@ void test_scene::initialize(input_devices& _inputs, window_structure& window){
 }
 
 void test_scene::display_frame(environment_structure &environment) {
-    if(gui.selected_scene==0 || gui.selected_scene==1 || gui.selected_scene==2){
-        
-    }
     environment.multiLight = false;
     if(gui.selected_scene==0){
         Spider.set_rotation(rotation_transform::from_axis_angle({1,0,0},gui.spider_rotation_around_x) * rotation_transform::from_axis_angle({0,1,0},gui.spider_rotation_around_y) * rotation_transform::from_axis_angle({0,0,1},gui.spider_rotation_around_z));
@@ -235,6 +235,20 @@ void test_scene::display_frame(environment_structure &environment) {
         Spider2.draw(environment);
         SpiderCtrl.debug_draw(environment);
     }
+    else if(gui.selected_scene==5){
+        vec3 deco_pos_rot_memory = col_positions_decorator.key_positions[1] - cristal_decorator.translation;
+        cristal_decorator.translation = col_positions_decorator.key_positions[0];
+        col_positions_decorator.key_positions[1] = cristal_decorator.translation + deco_pos_rot_memory;
+        col_positions_decorator.display_key_positions(environment);
+        if(gui.show_decorator){
+            environment.lights.push_back(cristal_decorator.getLightParams());
+            cristal_decorator.rotation = rotation_transform::from_vector_transform({0,0,1},normalize(col_positions_decorator.key_positions[1]-col_positions_decorator.key_positions[0]));
+            cristal_decorator.rotation = cristal_decorator.rotation * rotation_transform::from_axis_angle({0,0,1},deco_z_rot);
+            cristal_decorator.update();
+            cristal_decorator.draw(environment);
+        }
+        cave_obj.draw(environment);
+    }
 }
 
 
@@ -285,6 +299,18 @@ void test_scene::display_gui(){
     else if(gui.selected_scene==4){
         SpiderCtrl.debug.display_gui();
     }
+    else if(gui.selected_scene==5){
+        ImGui::Checkbox("Show decorator",&gui.show_decorator);
+        ImGui::SliderFloat("Decorator scale",&cristal_decorator.scaling,0,3);
+        ImGui::SliderFloat("Decorator Z rotation",&deco_z_rot,-Pi,Pi);
+        ImGui::SliderFloat("Light Intensity",&cristal_decorator.intensity,0,10);
+        ImGui::SliderFloat("Light Distance",&cristal_decorator.distance,0,15);
+        bool click = ImGui::Button("Show transform",{250,50});
+        if(click){
+            std::cout << cristal_decorator.translation << std::endl;
+            std::cout << cristal_decorator.rotation.get_quaternion() << std::endl;;
+        }
+    }
 }
 
 void test_scene::mouse_move_event(environment_structure &environment,input_devices& inputs,camera_projection_perspective &_camera_projection){
@@ -306,6 +332,9 @@ void test_scene::mouse_move_event(environment_structure &environment,input_devic
     }
     else if(gui.selected_scene==4){
         SpiderCtrl.mouse_move_event(environment, inputs);
+    }
+    else if(gui.selected_scene==5){
+        col_positions_decorator.update_picking(inputs, camera_control.camera_model, _camera_projection);
     }
 }
 void test_scene::mouse_click_event(environment_structure &environment){

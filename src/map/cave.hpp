@@ -10,9 +10,8 @@ class cave: public collision_handler
 private:
     cave_mesh CaveMesh;
 
-    cristal_ram cristal1;
-    cristal_rock cristal2;
-    cristal_large cristal3;
+    cristal_rock cristal1;
+    cristal_ram cristal2;
 public:
     cave();
 
