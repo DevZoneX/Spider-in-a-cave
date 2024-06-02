@@ -11,6 +11,7 @@ private:
     cave_mesh CaveMesh;
 
     cristal_ram cristal1;
+    cristal_rock cristal2;
 public:
     cave();
 

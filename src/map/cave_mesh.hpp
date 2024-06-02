@@ -20,6 +20,10 @@ private:
     cgp::mesh cmesh_wall2;
     cgp::mesh_drawable cmeshd_wall2;
 
+    bool createdPartition = true;
+
+    std::vector<collision_object*> toDelete;
+
 
 public:
     cave_mesh();

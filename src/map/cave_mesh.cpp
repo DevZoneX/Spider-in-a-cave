@@ -87,11 +87,17 @@ void cave_mesh::initialize(){
 
 void cave_mesh::initialize(collision_partition *_partition){
     partition = _partition;
+    createdPartition = false;
     initialize();
 }
 
 cave_mesh::~cave_mesh(){
-    delete partition;
+    if(createdPartition){
+        delete partition;
+    }
+    for(auto object : toDelete){
+        delete object;
+    }
 }
 
 
@@ -222,21 +228,29 @@ void cave_mesh::update_terrain()
             int const idx3 = (ku+1)*N_wall+kv;
             int const idx4 = (ku+1)*N_wall+kv+1;
 
-            vec3 pos1 = cmeshd_wall1.model.scaling*cmeshd_wall1.model.scaling_xyz*cmesh.position[idx]+cmeshd_wall1.model.translation;
-            vec3 pos2 = cmeshd_wall1.model.scaling*cmeshd_wall1.model.scaling_xyz*cmesh.position[idx2]+cmeshd_wall1.model.translation;
-            vec3 pos3 = cmeshd_wall1.model.scaling*cmeshd_wall1.model.scaling_xyz*cmesh.position[idx3]+cmeshd_wall1.model.translation;
-            vec3 pos4 = cmeshd_wall1.model.scaling*cmeshd_wall1.model.scaling_xyz*cmesh.position[idx4]+cmeshd_wall1.model.translation;
+            vec3 pos1 = cmeshd_wall1.model.scaling*cmeshd_wall1.model.scaling_xyz*cmesh_wall1.position[idx]+cmeshd_wall1.model.translation;
+            vec3 pos2 = cmeshd_wall1.model.scaling*cmeshd_wall1.model.scaling_xyz*cmesh_wall1.position[idx2]+cmeshd_wall1.model.translation;
+            vec3 pos3 = cmeshd_wall1.model.scaling*cmeshd_wall1.model.scaling_xyz*cmesh_wall1.position[idx3]+cmeshd_wall1.model.translation;
+            vec3 pos4 = cmeshd_wall1.model.scaling*cmeshd_wall1.model.scaling_xyz*cmesh_wall1.position[idx4]+cmeshd_wall1.model.translation;
 
-            partition->add_collision(new collision_triangle(pos1,pos2-pos1,pos4-pos1));
-            partition->add_collision(new collision_triangle(pos1,pos3-pos1,pos4-pos1));
+            collision_object* tri1 = new collision_triangle(pos1,pos2-pos1,pos4-pos1);
+            collision_object* tri2 = new collision_triangle(pos1,pos3-pos1,pos4-pos1);
+            toDelete.push_back(tri1);
+            toDelete.push_back(tri2);
+            partition->add_collision(tri1);
+            partition->add_collision(tri2);
 
-            pos1 = cmeshd_wall1.model.scaling*cmeshd_wall1.model.scaling_xyz*cmesh.position[idx]+cmeshd_wall1.model.translation;
-            pos2 = cmeshd_wall1.model.scaling*cmeshd_wall1.model.scaling_xyz*cmesh.position[idx2]+cmeshd_wall1.model.translation;
-            pos3 = cmeshd_wall1.model.scaling*cmeshd_wall1.model.scaling_xyz*cmesh.position[idx3]+cmeshd_wall1.model.translation;
-            pos4 = cmeshd_wall1.model.scaling*cmeshd_wall1.model.scaling_xyz*cmesh.position[idx4]+cmeshd_wall1.model.translation;
+            pos1 = cmeshd_wall2.model.scaling*cmeshd_wall2.model.scaling_xyz*cmesh_wall2.position[idx]+cmeshd_wall2.model.translation;
+            pos2 = cmeshd_wall2.model.scaling*cmeshd_wall2.model.scaling_xyz*cmesh_wall2.position[idx2]+cmeshd_wall2.model.translation;
+            pos3 = cmeshd_wall2.model.scaling*cmeshd_wall2.model.scaling_xyz*cmesh_wall2.position[idx3]+cmeshd_wall2.model.translation;
+            pos4 = cmeshd_wall2.model.scaling*cmeshd_wall2.model.scaling_xyz*cmesh_wall2.position[idx4]+cmeshd_wall2.model.translation;
 
-            partition->add_collision(new collision_triangle(pos1,pos2-pos1,pos4-pos1));
-            partition->add_collision(new collision_triangle(pos1,pos3-pos1,pos4-pos1));
+            tri1 = new collision_triangle(pos1,pos2-pos1,pos4-pos1);
+            tri2 = new collision_triangle(pos1,pos3-pos1,pos4-pos1);
+            toDelete.push_back(tri1);
+            toDelete.push_back(tri2);
+            partition->add_collision(tri1);
+            partition->add_collision(tri2);
         }
     }
 
@@ -252,8 +266,12 @@ void cave_mesh::update_terrain()
             vec3 pos3 = cmeshd.model.scaling*cmeshd.model.scaling_xyz*cmesh.position[idx3]+cmeshd.model.translation;
             vec3 pos4 = cmeshd.model.scaling*cmeshd.model.scaling_xyz*cmesh.position[idx4]+cmeshd.model.translation;
 
-            partition->add_collision(new collision_triangle(pos1,pos2-pos1,pos4-pos1));
-            partition->add_collision(new collision_triangle(pos1,pos3-pos1,pos4-pos1));
+            collision_object* tri1 = new collision_triangle(pos1,pos2-pos1,pos4-pos1);
+            collision_object* tri2 = new collision_triangle(pos1,pos3-pos1,pos4-pos1);
+            toDelete.push_back(tri1);
+            toDelete.push_back(tri2);
+            partition->add_collision(tri1);
+            partition->add_collision(tri2);
         }
     }
 
@@ -269,8 +287,12 @@ void cave_mesh::update_terrain()
             vec3 pos3 = cmeshd_ground.model.scaling*cmeshd_ground.model.scaling_xyz*cmesh_ground.position[idx3]+cmeshd_ground.model.translation;
             vec3 pos4 = cmeshd_ground.model.scaling*cmeshd_ground.model.scaling_xyz*cmesh_ground.position[idx4]+cmeshd_ground.model.translation;
 
-            partition->add_collision(new collision_triangle(pos1,pos2-pos1,pos4-pos1));
-            partition->add_collision(new collision_triangle(pos1,pos3-pos1,pos4-pos1));
+            collision_object* tri1 = new collision_triangle(pos1,pos2-pos1,pos4-pos1);
+            collision_object* tri2 = new collision_triangle(pos1,pos3-pos1,pos4-pos1);
+            toDelete.push_back(tri1);
+            toDelete.push_back(tri2);
+            partition->add_collision(tri1);
+            partition->add_collision(tri2);
         }
     }
 
