@@ -22,6 +22,12 @@ void cave::initialize(){
     cristal2.addCollisions(partition);
     cristal1.update();
     cristal2.update();
+    cristal3.initialize();
+    cristal3.scaling = 0.7;
+    cristal3.translation = {0,3,0};
+    cristal3.distance = 10;
+    cristal3.addCollisions(partition);
+    cristal3.update();
 
     collision_handler::initialize(partition);
 }
@@ -33,4 +39,5 @@ void cave::draw(environment_structure &environment){
     CaveMesh.draw(environment);
     cristal1.draw(environment);
     cristal2.draw(environment);
+    cristal3.draw(environment);
 }

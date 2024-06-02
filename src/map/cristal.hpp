@@ -70,3 +70,18 @@ public:
     void addCollisions(collision_partition *partition) override;
     vec3 getLightPosition() override;
 };
+class cristal_large: public cristal{
+protected:
+    virtual void chooseTexture();
+public:
+    static mesh cristal;
+    static mesh_drawable cristald;
+    static bool initialized;
+
+    cristal_large();
+
+
+    void initialize() override;
+    void addCollisions(collision_partition *partition) override;
+    vec3 getLightPosition() override;
+};

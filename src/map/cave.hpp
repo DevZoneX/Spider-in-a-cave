@@ -12,6 +12,7 @@ private:
 
     cristal_ram cristal1;
     cristal_rock cristal2;
+    cristal_large cristal3;
 public:
     cave();
 

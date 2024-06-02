@@ -135,3 +135,51 @@ vec3 cristal_rock::getLightPosition()
     return translation + up;
 }
 
+
+
+
+bool cristal_large::initialized = false;
+mesh cristal_large::cristal;
+mesh_drawable cristal_large::cristald;
+void cristal_large::chooseTexture(){
+    toDraw.texture = cristal::texture_purple;
+}
+cristal_large::cristal_large(){
+    intensity = 1.5;
+    distance = 7;
+
+    color = {1,0.5,1};
+}
+void cristal_large::initialize()
+{
+    if(!initialized){
+        cristal = mesh_load_file_obj(project::path+"assets/cristal/cristals4.obj");
+        cristald.initialize_data_on_gpu(cristal);
+        initialized = true;
+    }
+    toDraw = cristald;
+    checkTextures();
+    chooseTexture();
+}
+
+void cristal_large::addCollisions(collision_partition *partition){
+    for(int i=0;i<cristal.connectivity.size();i++){
+        uint3 indexes = cristal.connectivity[i];
+        vec3 pos1 = translation + scaling * scaling_xyz * cristal.position[indexes[0]];
+        vec3 pos2 = translation + scaling * scaling_xyz * cristal.position[indexes[1]];
+        vec3 pos3 = translation + scaling * scaling_xyz * cristal.position[indexes[2]];
+
+        partition->add_collision(new collision_triangle(pos1,pos2-pos1,pos3-pos1));
+    }
+}
+
+vec3 cristal_large::getLightPosition()
+{
+    vec3 up = {0,0,1};
+    up = scaling_xyz * up;
+    up = rotation * up;
+    up = scaling * up;
+    up *= 1.05;
+    return translation + up;
+}
+
