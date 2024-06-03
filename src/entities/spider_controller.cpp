@@ -237,7 +237,7 @@ void SpiderController::update(collision_object* col){
     }
     handlePosition(leftDt);
     handleVelocity(leftDt);
-    animate(dt,col);
+    animate(leftDt,col);
 
     ControlledSpider->updateRotation();
     smoothHeight();

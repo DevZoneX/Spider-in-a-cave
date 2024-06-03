@@ -174,49 +174,49 @@ float organic_spider::getBoneLength(leg whichLeg, bone whichBone)
 {
      if(whichLeg==FrontLeft || whichLeg==FrontRight){
         if(whichBone==BaseBone){
-            return 0.40f;
+            return 0.42f;
         }
         else if(whichBone==MiddleBone){
-            return 0.45f;
+            return 0.47f;
         }
         else if(whichBone==FootBone){
-            return 0.65f;
+            return 0.68f;
         }
         return 0.0;
     }
     else if(whichLeg==BackLeft || whichLeg==BackRight){
         if(whichBone==BaseBone){
-            return 0.40f;
+            return 0.42f;
         }
         else if(whichBone==MiddleBone){
-            return 0.38f;
+            return 0.40f;
         }
         else if(whichBone==FootBone){
-            return 0.65f;
+            return 0.68f;
         }
         return 0.0;
     }
     else if(whichLeg==MiddleLeft || whichLeg==MiddleRight){
         if(whichBone==BaseBone){
-            return 0.40f;
+            return 0.42f;
         }
         else if(whichBone==MiddleBone){
-            return 0.37f;
+            return 0.39f;
         }
         else if(whichBone==FootBone){
-            return 0.60f;
+            return 0.63f;
         }
         return 0.0;
     }
     else if(whichLeg==Middle2Left || whichLeg==Middle2Right){
         if(whichBone==BaseBone){
-            return 0.45f;
+            return 0.47f;
         }
         else if(whichBone==MiddleBone){
-            return 0.37f;
+            return 0.39f;
         }
         else if(whichBone==FootBone){
-            return 0.55f;
+            return 0.58f;
         }
         return 0.0;
     }

@@ -19,8 +19,8 @@ private:
     vec3 center = {0,0,0};
 
     int N_x=10;
-    int N_y=10;
-    int N_z=10;
+    int N_y=20;
+    int N_z=12;
 
     std::vector<collision_object*> *collision_list_partition = NULL;
     std::vector<collision_object*> out_collisions;

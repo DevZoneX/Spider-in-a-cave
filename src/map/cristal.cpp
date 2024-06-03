@@ -15,11 +15,8 @@ cristal::cristal(){
 void cristal::checkTextures()
 {
     if(!texturesInitialized){
-        std::cout << "here" << std::endl;
         texture_purple.load_and_initialize_texture_2d_on_gpu(project::path+"assets/cristal/textures/Cristals.png",GL_REPEAT,GL_REPEAT);
-        std::cout << "here2" << std::endl;
         texture_orange.load_and_initialize_texture_2d_on_gpu(project::path+"assets/cristal/textures/Cristals2.png",GL_REPEAT,GL_REPEAT);
-        std::cout << "here3" << std::endl;
         texturesInitialized = true;
     }
 }

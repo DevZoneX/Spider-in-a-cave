@@ -35,7 +35,7 @@ class SpiderController
     };
     struct params{
         spider::leg legs[NUM_LEGS] = {spider::FrontLeft,spider::FrontRight,spider::MiddleLeft,spider::MiddleRight,spider::Middle2Left,spider::Middle2Right,spider::BackLeft,spider::BackRight};
-        float BodyHeight = 0.6f;
+        float BodyHeight = 0.72f;
         float RestPositionDistance = 1.5f;
         float LegsRestPositionUpThreshold = 0.9f;
         float acceleration = 1.7f;
@@ -45,8 +45,8 @@ class SpiderController
         float maxAngularVelocity = 0.7f;
         float angularAcceleration = 1.5f;
         float arcFactor = 0.4f;
-        float maxLegElevation = 1.0f;
-        float minLegElevation = -0.7f;
+        float maxLegElevation = 1.2f;
+        float minLegElevation = -1.2f;
         float animationSpeed = 1.0f;
         float animationHeight = 0.2f;
 

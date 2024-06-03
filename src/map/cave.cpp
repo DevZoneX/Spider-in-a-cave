@@ -7,7 +7,7 @@ cave::cave()
 
 void cave::initialize(){
     if(partition==NULL){
-        partition = new collision_partition({1.2,1.2,1.3});   
+        partition = new collision_partition({1.2,1.19,1.3});   
     }
 
     CaveMesh.initialize(partition);
