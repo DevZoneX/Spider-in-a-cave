@@ -100,6 +100,8 @@ private:
     vec3 cameraVelocity;
     float old_t;
 
+    rotation_transform rotation_memory;
+
 
     bool isEventTriggered(int &event_index);
     float getRestRadius(spider::leg whichLeg);

@@ -146,6 +146,7 @@ void SpiderController::smoothHeight(bool average)
 
 
     vec3 initialUp = {0,0,1};
+    initialUp = rotation_memory * initialUp;
     vec3 upVector = cross(front_average-back_average,right_average-left_average);
     if(norm(upVector)<=0.00001){
         std::cout << "ERROR" << std::endl;
@@ -161,7 +162,8 @@ void SpiderController::smoothHeight(bool average)
     q.w = sqrt(pow(norm(initialUp),2) * pow(norm(upVector),2)) + dot(initialUp, upVector);
     q = normalize(q);
     rotation_transform yaw = rotation_transform::from_axis_angle(rotation_transform::from_quaternion(q)*initialUp,angle);
-    ControlledSpider->set_rotation(yaw*rotation_transform::from_quaternion(q));
+    rotation_memory = rotation_transform::from_quaternion(q) * rotation_memory;
+    ControlledSpider->set_rotation(yaw*rotation_memory);
 
     
 
