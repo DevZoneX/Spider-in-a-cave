@@ -100,7 +100,7 @@ public:
     cristal_large_gold();
 };
 
-class cristal_ram_gold: public cristal_large{
+class cristal_ram_gold: public cristal_ram{
 protected:
     void chooseTexture();
 public:
