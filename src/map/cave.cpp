@@ -46,6 +46,15 @@ void cave::initialize(){
     cristal4.update();
     cristal4.addCollisions(partition);
 
+    cristal5.initialize();
+    cristal5.scaling = 1.25;
+    cristal5.translation = {-6.595268,-16.108519,2.864259};
+    cristal5.rotation = rotation_transform::from_quaternion({0.252190,0.676000,0.342840,0.601569}),
+    cristal5.distance = 10;
+    cristal5.intensity = 3;
+    cristal5.update();
+    cristal5.addCollisions(partition);
+
 
     collision_handler::initialize(partition);
 }
@@ -58,9 +67,13 @@ void cave::draw(environment_structure &environment){
     cristal3_light.position += {-1,0,0};
     environment.lights.push_back(cristal3_light);
     environment.lights.push_back(cristal4.getLightParams());
+    light_params cristal5_light = cristal5.getLightParams();
+    cristal5_light.position += {1,0,0};
+    environment.lights.push_back(cristal5_light);
     CaveMesh.draw(environment);
     cristal1.draw(environment);
     cristal2.draw(environment);
     cristal3.draw(environment);
     cristal4.draw(environment);
+    cristal5.draw(environment);
 }

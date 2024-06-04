@@ -4,6 +4,7 @@
 bool cristal::texturesInitialized = false;
 opengl_texture_image_structure cristal::texture_purple;
 opengl_texture_image_structure cristal::texture_orange;
+opengl_shader_structure cristal::cristal_shader;
 
 cristal::cristal(){
     toDraw.material.phong.ambient=1;
@@ -17,6 +18,7 @@ void cristal::checkTextures()
     if(!texturesInitialized){
         texture_purple.load_and_initialize_texture_2d_on_gpu(project::path+"assets/cristal/textures/Cristals.png",GL_REPEAT,GL_REPEAT);
         texture_orange.load_and_initialize_texture_2d_on_gpu(project::path+"assets/cristal/textures/Cristals2.png",GL_REPEAT,GL_REPEAT);
+        cristal_shader.load(project::path + "shaders/cristal_shader/cristal.vert.glsl", project::path + "shaders/cristal_shader/cristal.frag.glsl");
         texturesInitialized = true;
     }
 }
@@ -31,6 +33,7 @@ void cristal::update(){
     toDraw.material.phong.specular = 0.2;
     toDraw.material.phong.diffuse = 0;
     toDraw.material.phong.specular_exponent = 40;
+    toDraw.shader = cristal_shader;
 }
 
 void cristal::draw(environment_structure environment){    
@@ -50,7 +53,7 @@ void cristal_ram::chooseTexture(){
 cristal_ram::cristal_ram(){
     intensity = 1.5;
     distance = 7;
-
+    toDraw.shader = cristal_shader;
     color = {1,0.5,1};
 }
 void cristal_ram::initialize()

@@ -12,6 +12,7 @@ public:
     static bool texturesInitialized;
     static opengl_texture_image_structure texture_purple;
     static opengl_texture_image_structure texture_orange;
+    static opengl_shader_structure cristal_shader;
     vec3 translation={0,0,0};
     rotation_transform rotation;
     float scaling = 1;
