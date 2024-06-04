@@ -129,13 +129,6 @@ light_params lights[8] = light_params[](
 
 
 
-// Camera position
-mat3 O = transpose(mat3(view)); // get the orientation matrix
-vec3 last_col = vec3(view * vec4(0.0, 0.0, 0.0, 1.0)); // get the last column
-vec3 camera_position = -O * last_col;
-uniform bool has_fog;
-uniform float fog_distance;
-uniform vec3 fog_color;
 
 vec3 computeColorWithLights(vec3 color_object,vec3 N,vec3 camera_position,vec3 fragment_position,float Ka,float Kd,float Ks,float specular_exponent){
 	vec3 color_shading = Ka * color_object;
@@ -167,6 +160,15 @@ vec3 computeColorWithLights(vec3 color_object,vec3 N,vec3 camera_position,vec3 f
 	return color_shading;
 }
 
+
+
+// Camera position
+mat3 O = transpose(mat3(view)); // get the orientation matrix
+vec3 last_col = vec3(view * vec4(0.0, 0.0, 0.0, 1.0)); // get the last column
+vec3 camera_position = -O * last_col;
+uniform bool has_fog;
+uniform float fog_distance;
+uniform vec3 fog_color;
 
 
 void main()

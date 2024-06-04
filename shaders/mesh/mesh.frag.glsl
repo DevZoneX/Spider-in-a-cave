@@ -149,6 +149,11 @@ vec3 computeColorWithLights(vec3 color_object,vec3 N,vec3 camera_position,vec3 f
 	return color_shading;
 }
 
+
+uniform bool has_fog;
+uniform float fog_distance;
+uniform vec3 fog_color;
+
 void main()
 {
 	// Compute the position of the center of the camera
@@ -223,4 +228,15 @@ void main()
 	
 	// Output color, with the alpha component
 	FragColor = vec4(color_shading, material.alpha * color_image_texture.a);
+
+	if(has_fog){
+		float distanceToCamera = length(camera_position-fragment.position);
+		float fogEffect = (fog_distance-distanceToCamera)/fog_distance;
+		float intensity = length(FragColor);
+		intensity = intensity*intensity*intensity;
+		fogEffect += intensity*1.5;
+		fogEffect = clamp(fogEffect,0.0,1.0);
+		vec4 fog_color_a = vec4(fog_color.x,fog_color.y,fog_color.z,1);
+		FragColor = fogEffect*FragColor + (1-fogEffect)*fog_color_a;
+	}
 }

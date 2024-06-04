@@ -29,6 +29,15 @@ void cave::initialize(){
     cristal2.addCollisions(partition);
     cristal2.update();
 
+    cristal3.initialize();
+    cristal3.translation = {6.399254,-1.817590,2.995139};
+    cristal3.rotation = rotation_transform::from_quaternion({-0.016534,-0.087254,0.223681,0.970608}),
+    cristal3.distance = 12;
+    cristal3.intensity = 3;
+    cristal3.addCollisions(partition);
+    cristal3.update();
+
+
 
     collision_handler::initialize(partition);
 }
@@ -37,7 +46,11 @@ void cave::draw(environment_structure &environment){
     environment.multiLight = true;
     environment.lights.push_back(cristal1.getLightParams());
     environment.lights.push_back(cristal2.getLightParams());
+    light_params cristal3_light = cristal3.getLightParams();
+    cristal3_light.position += {-1,0,0};
+    environment.lights.push_back(cristal3_light);
     CaveMesh.draw(environment);
     cristal1.draw(environment);
     cristal2.draw(environment);
+    cristal3.draw(environment);
 }

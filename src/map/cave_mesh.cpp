@@ -73,16 +73,16 @@ void cave_mesh::initialize(){
     cmeshd_ground.supplementary_texture["image_texture_2"] = normal_map_texture;
     
 
+    cmeshd.material.phong.ambient = 0.1;
     cmeshd.material.phong.specular *= 0.2;
     cmeshd.material.phong.specular_exponent = 10;
     cmeshd.material.phong.diffuse *= 0.6;
 
-    cmeshd_ground.material.phong.specular *= 0.2;
-    cmeshd_ground.material.phong.specular_exponent = 10;
-    cmeshd_ground.material.phong.diffuse *= 0.6;
+    cmeshd_ground.material = cmeshd.material;
+;
 
-    cmeshd_wall1.material = cmeshd_ground.material;
-    cmeshd_wall2.material = cmeshd_ground.material;
+    cmeshd_wall1.material = cmeshd.material;
+    cmeshd_wall2.material = cmeshd.material;
 }
 
 void cave_mesh::initialize(collision_partition *_partition){
@@ -421,4 +421,17 @@ void cave_mesh::update_terrain()
     cmeshd_wall2.vbo_color.update(cmesh_wall2.color);
     cmeshd_wall2.initialize_supplementary_data_on_gpu(tangents_wall2,4);
     cmeshd_wall2.initialize_supplementary_data_on_gpu(bitangents_wall2,5);
+}
+
+opengl_shader_structure cave_mesh::getShader()
+{
+    if(!initialized_textures){
+        texture.load_and_initialize_texture_2d_on_gpu(project::path + "assets/rock_face_comp.png",
+            GL_REPEAT,
+            GL_REPEAT);
+        normal_map_texture.load_and_initialize_texture_2d_on_gpu(project::path + "assets/rock_face_normal_comp.png");
+        shader.load(project::path + "shaders/normal_map/mesh_normal.vert.glsl", project::path + "shaders/normal_map/mesh_normal.frag.glsl");
+        initialized_textures = true;
+    }
+    return shader;
 }

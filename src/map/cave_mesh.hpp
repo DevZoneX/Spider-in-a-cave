@@ -63,6 +63,8 @@ public:
     void initialize(collision_partition *_partition);
     void draw(environment_structure environment);
     void update_terrain();
+
+    static opengl_shader_structure getShader();
 };
 
 #endif // CAVE_MESH_H

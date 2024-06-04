@@ -1,9 +1,12 @@
 #include "organic_spider.hpp"
-
+#include "../utils/math.hpp"
 
 
 bool organic_spider::textureInitialized = false;
 opengl_texture_image_structure organic_spider::texture;
+opengl_texture_image_structure organic_spider::normal_texture;
+material_mesh_drawable_phong organic_spider::material;
+
 
 
 mesh organic_spider::getLegMesh(leg whichLeg, bone whichBone, float &scaling){
@@ -72,14 +75,51 @@ mesh organic_spider::getLegMesh(leg whichLeg, bone whichBone, float &scaling){
 void organic_spider::initialize(){
     mesh_drawable body;
 
+    material.phong.specular = 0.1f;
+
     if(!textureInitialized){
         texture.load_and_initialize_texture_2d_on_gpu(getTexturePath(),GL_REPEAT,GL_REPEAT);
+        normal_texture.load_and_initialize_texture_2d_on_gpu(project::path+"assets/spider/textures/spider1_nmap.jpg",GL_REPEAT,GL_REPEAT);
         textureInitialized = true;
     }
 
-    body.initialize_data_on_gpu(mesh_load_file_obj(project::path+"assets/spider/spider_body.obj"));
+    mesh body_mesh = mesh_load_file_obj(project::path+"assets/spider/spider_body.obj");
+    body.initialize_data_on_gpu(body_mesh);
     body.model.scaling = 1.5;
+    
+    numarray<vec3> tangents_body;
+    numarray<vec3> bitangents_body;
+    tangents_body.resize(body_mesh.position.size());
+    bitangents_body.resize(body_mesh.position.size());
+    for(int i=0;i<body_mesh.connectivity.size();i++){
+        uint3 indexes = body_mesh.connectivity[i];
+        int idx = indexes[0];
+        int idx2 = indexes[1];
+        int idx3 = indexes[2];
+        /*vec3 pos1 = body_mesh.position[indexes[0]];
+        vec3 pos2 = body_mesh.position[indexes[1]];
+        vec3 pos3 = body_mesh.position[indexes[2]];
+        vec2 uv1 = body_mesh.uv[indexes[0]];
+        vec2 uv2 = body_mesh.uv[indexes[1]];
+        vec2 uv3 = body_mesh.uv[indexes[2]];
+        vec3 normal = body_mesh.normal[]*/
+
+        tangents_body[idx] = math::calculate_tangent(body_mesh.position[idx],body_mesh.position[idx2],body_mesh.position[idx3],body_mesh.uv[idx],body_mesh.uv[idx2],body_mesh.uv[idx3],body_mesh.normal[idx]);
+        bitangents_body[idx] = math::calculate_bitangent(tangents_body[idx],body_mesh.normal[idx]);
+        idx = indexes[1];idx2 = indexes[2];idx3 = indexes[0];  
+        tangents_body[idx] = math::calculate_tangent(body_mesh.position[idx],body_mesh.position[idx2],body_mesh.position[idx3],body_mesh.uv[idx],body_mesh.uv[idx2],body_mesh.uv[idx3],body_mesh.normal[idx]);
+        bitangents_body[idx] = math::calculate_bitangent(tangents_body[idx],body_mesh.normal[idx]);
+        idx = indexes[2];idx2 = indexes[0];idx3 = indexes[1];  
+        tangents_body[idx] = math::calculate_tangent(body_mesh.position[idx],body_mesh.position[idx2],body_mesh.position[idx3],body_mesh.uv[idx],body_mesh.uv[idx2],body_mesh.uv[idx3],body_mesh.normal[idx]);
+        bitangents_body[idx] = math::calculate_bitangent(tangents_body[idx],body_mesh.normal[idx]);
+    }
+    body.initialize_supplementary_data_on_gpu(tangents_body,4);
+    body.initialize_supplementary_data_on_gpu(bitangents_body,5);
+    
+    body.shader = cave_mesh::getShader();
     body.texture = texture;
+    body.material = material;
+    body.supplementary_texture["image_texture_2"]=normal_texture;
     spider_hierarchy.add(body,"body");
 
     spider_hierarchy.add(mesh_drawable(),"leftc1","body");
@@ -131,10 +171,13 @@ void organic_spider::initializeLegHierarchy(leg whichLeg, vec3 bindPosition)
     articulation.initialize_data_on_gpu(mesh_primitive_sphere(0.025f));
     bone1.initialize_data_on_gpu(getLegMesh(whichLeg,BaseBone,scaling));
     bone1.model.scaling = scaling; scaling = 1;
+    bone1.material = material;
     bone2.initialize_data_on_gpu(getLegMesh(whichLeg,MiddleBone,scaling));
     bone2.model.scaling = scaling; scaling = 1;
+    bone2.material = material;
     bone3.initialize_data_on_gpu(getLegMesh(whichLeg,FootBone,scaling));
     bone3.model.scaling = scaling; scaling = 1;
+    bone3.material = material;
 
 
     

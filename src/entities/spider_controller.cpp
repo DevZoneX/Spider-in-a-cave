@@ -104,7 +104,7 @@ bool SpiderController::isEventTriggered(int &event_index)
 float SpiderController::getRestRadius(spider::leg whichLeg)
 {
     if(whichLeg==spider::BackLeft){whichLeg = spider::FrontLeft;}
-    if(norm(velocity)<0.01){
+    if(norm(velocity)<0.01 && false){
         return 0.07f;
     }
     return 0.2f;
