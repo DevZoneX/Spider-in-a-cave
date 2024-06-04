@@ -40,7 +40,7 @@ void test_scene::initialize(input_devices& _inputs, window_structure& window){
 		{0,0,0} /* targeted point in 3D scene */,
 		{0,0,1} /* direction of the "up" vector */);
 
-
+    global_frame.initialize_data_on_gpu(mesh_primitive_frame());
 
     
     numarray<vec3> key_positions =
@@ -102,6 +102,10 @@ void test_scene::initialize(input_devices& _inputs, window_structure& window){
 
 void test_scene::display_frame(environment_structure &environment) {
     environment.multiLight = false;
+    environment.has_fog = false;
+    // conditional display of the global frame (set via the GUI)
+	if (gui.display_frame)
+		draw(global_frame, environment);
     if(gui.selected_scene==0){
         Spider.set_rotation(rotation_transform::from_axis_angle({1,0,0},gui.spider_rotation_around_x) * rotation_transform::from_axis_angle({0,1,0},gui.spider_rotation_around_y) * rotation_transform::from_axis_angle({0,0,1},gui.spider_rotation_around_z));
         Spider.setLegPosition(spider::FrontRight,legs_positions.key_positions[0],false);
@@ -230,6 +234,8 @@ void test_scene::display_frame(environment_structure &environment) {
         }
     }
     else if(gui.selected_scene==4){
+        environment.has_fog = true;
+        environment.fog_distance = 7;
         SpiderCtrl.update(&cave_obj);
         cave_obj.draw(environment);
         Spider2.draw(environment);
@@ -253,7 +259,7 @@ void test_scene::display_frame(environment_structure &environment) {
 
 
 void test_scene::display_gui(){
-
+    ImGui::Checkbox("Frame", &gui.display_frame);
     ImGui::ListBox("Test Scenes",&gui.selected_scene,gui.listc,gui.num_scenes,gui.num_scenes);
 
     if(gui.selected_scene==0){

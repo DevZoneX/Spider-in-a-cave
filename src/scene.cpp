@@ -25,10 +25,12 @@ void scene_structure::initialize()
 		{0,0,0} /* targeted point in 3D scene */,
 		{0,0,1} /* direction of the "up" vector */);
 
+	environment.fog_color = {0,0,0};
+
 	// Display general information
 	display_info();
 	// Create the global (x,y,z) frame
-	global_frame.initialize_data_on_gpu(mesh_primitive_frame());
+	
 
 
     testing_scene.initialize(inputs,window);
@@ -59,9 +61,7 @@ void scene_structure::display_frame()
 	
     debug_timer.update();
 
-	// conditional display of the global frame (set via the GUI)
-	if (gui.display_frame)
-		draw(global_frame, environment);
+	
 
     if(gui.selected_scene==0){
         Cave.draw(environment);
@@ -90,7 +90,6 @@ void scene_structure::display_frame()
 
 void scene_structure::display_gui()
 {
-	ImGui::Checkbox("Frame", &gui.display_frame);
 	ImGui::Checkbox("Wireframe", &gui.display_wireframe);
 
 

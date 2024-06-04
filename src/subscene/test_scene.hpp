@@ -19,6 +19,7 @@ using namespace cgp;
 
 
 struct test_gui {
+    bool display_frame = true;
 
     int selected_scene = 5;
     int num_scenes = 6;
@@ -48,7 +49,7 @@ public:
 
     // Props
 
-
+    mesh_drawable global_frame;          // The standard global frame
     keyframe_structure legs_positions;
     keyframe_structure col_positions;
     keyframe_structure col_positions_partition;

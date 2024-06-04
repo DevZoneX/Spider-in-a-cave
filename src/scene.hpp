@@ -17,7 +17,7 @@ using cgp::timer_basic;
 
 // Variables associated to the GUI (buttons, etc)
 struct gui_parameters {
-	bool display_frame = true;
+	
 	bool display_wireframe = false;
 
     int selected_scene = 1;
@@ -45,7 +45,6 @@ struct scene_structure : cgp::scene_inputs_generic {
 	camera_projection_perspective camera_projection;
 	window_structure window;
 
-	mesh_drawable global_frame;          // The standard global frame
 	environment_structure environment;   // Standard environment controler
 	input_devices inputs;                // Storage for inputs status (mouse, keyboard, window dimension)
 	gui_parameters gui;                  // Standard GUI element storage

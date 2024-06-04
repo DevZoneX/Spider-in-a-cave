@@ -127,6 +127,16 @@ light_params lights[8] = light_params[](
 	light_params(light_7_pos,light_7_color,light_7_dist,light_7_intensity)
 	);
 
+
+
+// Camera position
+mat3 O = transpose(mat3(view)); // get the orientation matrix
+vec3 last_col = vec3(view * vec4(0.0, 0.0, 0.0, 1.0)); // get the last column
+vec3 camera_position = -O * last_col;
+uniform bool has_fog;
+uniform float fog_distance;
+uniform vec3 fog_color;
+
 vec3 computeColorWithLights(vec3 color_object,vec3 N,vec3 camera_position,vec3 fragment_position,float Ka,float Kd,float Ks,float specular_exponent){
 	vec3 color_shading = Ka * color_object;
 	for(int i=0;i<num_light;i++){
@@ -263,5 +273,16 @@ void main()
 	}
 	
 	// Output color, with the alpha component
-        FragColor = vec4(color_shading, material.alpha * color_image_texture.a);
+    FragColor = vec4(color_shading, material.alpha * color_image_texture.a);
+
+	if(has_fog){
+		float distanceToCamera = length(camera_position-fragment.position);
+		float fogEffect = (fog_distance-distanceToCamera)/fog_distance;
+		float intensity = length(FragColor);
+		intensity = intensity*intensity*intensity;
+		fogEffect += intensity*1.5;
+		fogEffect = clamp(fogEffect,0.0,1.0);
+		vec4 fog_color_a = vec4(fog_color.x,fog_color.y,fog_color.z,1);
+		FragColor = fogEffect*FragColor + (1-fogEffect)*fog_color_a;
+	}
 }

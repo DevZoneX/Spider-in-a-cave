@@ -38,6 +38,11 @@ struct environment_structure : environment_generic_structure
 	const int max_lights = 8; // If you change this value, you must change it also in the shaders
 	std::vector<light_params> lights;
 
+
+	bool has_fog = false;
+	float fog_distance = 5.0f;
+	vec3 fog_color = {1,1,1};
+
 	// Additional uniforms that can be attached to the environment if needed (empty by default)
 	uniform_generic_structure uniform_generic;
 
