@@ -68,9 +68,9 @@ void cristal_ram::initialize()
 void cristal_ram::addCollisions(collision_partition *partition){
     for(int i=0;i<cristal.connectivity.size();i++){
         uint3 indexes = cristal.connectivity[i];
-        vec3 pos1 = translation + scaling * scaling_xyz * cristal.position[indexes[0]];
-        vec3 pos2 = translation + scaling * scaling_xyz * cristal.position[indexes[1]];
-        vec3 pos3 = translation + scaling * scaling_xyz * cristal.position[indexes[2]];
+        vec3 pos1 = translation + scaling * scaling_xyz * (rotation * cristal.position[indexes[0]]);
+        vec3 pos2 = translation + scaling * scaling_xyz * (rotation * cristal.position[indexes[1]]);
+        vec3 pos3 = translation + scaling * scaling_xyz * (rotation * cristal.position[indexes[2]]);
 
         partition->add_collision(new collision_triangle(pos1,pos2-pos1,pos3-pos1));
     }
@@ -114,9 +114,9 @@ void cristal_rock::initialize()
 void cristal_rock::addCollisions(collision_partition *partition){
     for(int i=0;i<cristal.connectivity.size();i++){
         uint3 indexes = cristal.connectivity[i];
-        vec3 pos1 = translation + scaling * scaling_xyz * cristal.position[indexes[0]];
-        vec3 pos2 = translation + scaling * scaling_xyz * cristal.position[indexes[1]];
-        vec3 pos3 = translation + scaling * scaling_xyz * cristal.position[indexes[2]];
+        vec3 pos1 = translation + scaling * scaling_xyz * (rotation * cristal.position[indexes[0]]);
+        vec3 pos2 = translation + scaling * scaling_xyz * (rotation * cristal.position[indexes[1]]);
+        vec3 pos3 = translation + scaling * scaling_xyz * (rotation * cristal.position[indexes[2]]);
 
         partition->add_collision(new collision_triangle(pos1,pos2-pos1,pos3-pos1));
     }
@@ -162,9 +162,9 @@ void cristal_large::initialize()
 void cristal_large::addCollisions(collision_partition *partition){
     for(int i=0;i<cristal.connectivity.size();i++){
         uint3 indexes = cristal.connectivity[i];
-        vec3 pos1 = translation + scaling * scaling_xyz * cristal.position[indexes[0]];
-        vec3 pos2 = translation + scaling * scaling_xyz * cristal.position[indexes[1]];
-        vec3 pos3 = translation + scaling * scaling_xyz * cristal.position[indexes[2]];
+        vec3 pos1 = translation + scaling * scaling_xyz * (rotation * cristal.position[indexes[0]]);
+        vec3 pos2 = translation + scaling * scaling_xyz * (rotation * cristal.position[indexes[1]]);
+        vec3 pos3 = translation + scaling * scaling_xyz * (rotation * cristal.position[indexes[2]]);
 
         partition->add_collision(new collision_triangle(pos1,pos2-pos1,pos3-pos1));
     }
@@ -180,3 +180,27 @@ vec3 cristal_large::getLightPosition()
     return translation + up;
 }
 
+void cristal_rock_gold::chooseTexture(){
+    toDraw.texture = cristal::texture_orange;
+}
+
+cristal_rock_gold::cristal_rock_gold()
+{
+    color = {1,0.5,0};
+}
+
+void cristal_large_gold::chooseTexture(){
+    toDraw.texture = cristal::texture_orange;
+}
+
+cristal_large_gold::cristal_large_gold(){
+    color = {1,0.5,0};
+}
+
+void cristal_ram_gold::chooseTexture(){
+    toDraw.texture = cristal::texture_orange;
+}
+
+cristal_ram_gold::cristal_ram_gold(){
+    color = {1,0.5,0};
+}

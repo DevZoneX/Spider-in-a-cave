@@ -25,7 +25,6 @@ public:
     vec3 color = {1,1,1};
 
 
-    vec3 lightColor={1,1,1};
     float lightDistance;
     float lightIntensity;
     cristal();
@@ -85,3 +84,28 @@ public:
     void addCollisions(collision_partition *partition) override;
     vec3 getLightPosition() override;
 };
+
+
+class cristal_rock_gold: public cristal_rock{
+protected:
+    void chooseTexture();
+public:
+    cristal_rock_gold();
+};
+
+class cristal_large_gold: public cristal_large{
+protected:
+    void chooseTexture();
+public:
+    cristal_large_gold();
+};
+
+class cristal_ram_gold: public cristal_large{
+protected:
+    void chooseTexture();
+public:
+    cristal_ram_gold();
+};
+
+
+
