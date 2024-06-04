@@ -28,6 +28,7 @@ void environment_structure::send_opengl_uniform(opengl_shader_structure const& s
 	opengl_uniform(shader, "view", camera_view, expected);
 	opengl_uniform(shader, "light", light, false);
 	opengl_uniform(shader, "multilight", multiLight, false);
+	opengl_uniform(shader, "time", time, false);
 	
 	opengl_uniform(shader, "has_fog", has_fog, false);
 	opengl_uniform(shader, "fog_distance", fog_distance, false);

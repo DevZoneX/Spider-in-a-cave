@@ -103,6 +103,8 @@ void test_scene::initialize(input_devices& _inputs, window_structure& window){
 void test_scene::display_frame(environment_structure &environment) {
     environment.multiLight = false;
     environment.has_fog = false;
+    timer.update();
+    environment.time = timer.t;
     // conditional display of the global frame (set via the GUI)
 	if (gui.display_frame)
 		draw(global_frame, environment);

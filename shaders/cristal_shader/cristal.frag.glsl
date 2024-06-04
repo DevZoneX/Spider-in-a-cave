@@ -75,7 +75,7 @@ int num_light = 8;
 
 
 
-
+uniform float time;
 
 uniform bool has_fog;
 uniform float fog_distance;
@@ -150,9 +150,15 @@ void main()
 	// Output color, with the alpha component
 	FragColor = vec4(color_shading, material.alpha * color_image_texture.a);
 
+	float period = 0.6+0.15*floor(fragment.position.x/7);
+	float delay = 0.3*fragment.position.y/8;
+	float period_multiplier = 0.88;
+	period_multiplier += 0.12*cos(period*time+delay);
+	FragColor = period_multiplier * FragColor;
+
 	if(has_fog){
 		float distanceToCamera = length(camera_position-fragment.position);
-		float fogEffect = (5*fog_distance-distanceToCamera)/fog_distance;
+		float fogEffect = (5.5*fog_distance-distanceToCamera)/fog_distance/1.2;
 		fogEffect = clamp(fogEffect,0.0,1.0);
 		vec4 fog_color_a = vec4(fog_color.x,fog_color.y,fog_color.z,1);
 		FragColor = fogEffect*FragColor + (1-fogEffect)*fog_color_a;

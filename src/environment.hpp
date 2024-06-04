@@ -43,6 +43,8 @@ struct environment_structure : environment_generic_structure
 	float fog_distance = 5.0f;
 	vec3 fog_color = {1,1,1};
 
+	float time = 0;
+
 	// Additional uniforms that can be attached to the environment if needed (empty by default)
 	uniform_generic_structure uniform_generic;
 
