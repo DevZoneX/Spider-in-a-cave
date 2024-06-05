@@ -55,7 +55,7 @@ public:
     keyframe_structure col_positions_partition;
     keyframe_structure col_positions_scene3;
     keyframe_structure col_positions_decorator;
-    organic_spider Spider;
+    spider Spider;
     organic_spider Spider2;
     SpiderController SpiderCtrl;
     collision_sphere* colsphere;

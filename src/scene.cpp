@@ -33,13 +33,15 @@ void scene_structure::initialize()
 	
 
 
-    testing_scene.initialize(inputs,window);
+    
 
 
 	// Create the shapes seen in the 3D scene
 	// ********************************************** //
-
+    Spider.initialize();
+    SpiderCtrl.initialize(&Spider,&timer,inputs,window);
     Cave.initialize();
+    SpiderCtrl.stick_to_ground(&Cave);
 }
 
 
@@ -64,7 +66,11 @@ void scene_structure::display_frame()
 	
 
     if(gui.selected_scene==0){
+        environment.has_fog = true;
+        environment.fog_distance = 7;
+        SpiderCtrl.update(&Cave);
         Cave.draw(environment);
+        Spider.draw(environment);
     }
     else if(gui.selected_scene==1){
         testing_scene.display_frame(environment);
@@ -90,17 +96,26 @@ void scene_structure::display_frame()
 
 void scene_structure::display_gui()
 {
-	ImGui::Checkbox("Wireframe", &gui.display_wireframe);
 
 
 
-    ImGui::ListBox("Scene",&gui.selected_scene,gui.listc,gui.num_scenes,2);
+    ImGui::ListBox("Scene",&gui.selected_scene,gui.listc,gui.num_scenes,gui.num_scenes);
+
+    if(!gui.has_initialized_test_scene){
+        bool initNow = ImGui::Button("Initialize test scenes", {300,30});
+        if(initNow){
+            testing_scene.initialize(inputs,window);    
+            gui.has_initialized_test_scene = true;
+            gui.num_scenes = 2;
+        }
+    }
 
 	if(gui.selected_scene==0){
-        ImGui::Checkbox("Cartoon Shadering",&gui.is_cartoon);
+        /*ImGui::Checkbox("Cartoon Shadering",&gui.is_cartoon);
 		if(gui.is_cartoon){
         	ImGui::SliderInt("Cartoon levels",&gui.cartoon_levels,1,20);
-		}
+		}*/
+        SpiderCtrl.display_gui();
     }
     else if(gui.selected_scene==1){
         testing_scene.display_gui();
@@ -111,8 +126,10 @@ void scene_structure::display_gui()
 void scene_structure::mouse_move_event()
 {
 	
-
-    if(gui.selected_scene==1){
+    if(gui.selected_scene==0){
+        SpiderCtrl.mouse_move_event(environment, inputs);
+    }
+    else if(gui.selected_scene==1){
         testing_scene.mouse_move_event(environment,inputs,camera_projection);
     }
     else{
@@ -123,7 +140,10 @@ void scene_structure::mouse_move_event()
 }
 void scene_structure::mouse_click_event()
 {
-    if(gui.selected_scene==1){
+    if(gui.selected_scene==0){
+        SpiderCtrl.mouse_click_event(environment);
+    }
+    else if(gui.selected_scene==1){
         testing_scene.mouse_click_event(environment);
     }
     else{
@@ -132,7 +152,10 @@ void scene_structure::mouse_click_event()
 }
 void scene_structure::keyboard_event()
 {
-    if(gui.selected_scene==1){
+    if(gui.selected_scene==0){
+        SpiderCtrl.action_keyboard(environment);
+    }
+    else if(gui.selected_scene==1){
         testing_scene.action_keyboard(environment);
     }
     else{
@@ -143,7 +166,10 @@ void scene_structure::keyboard_event()
 void scene_structure::idle_frame()
 {
 	camera_control.idle_frame(environment.camera_view);
-    if(gui.selected_scene==1){
+    if(gui.selected_scene==0){
+        SpiderCtrl.idle_frame(environment, &Cave);
+    }
+    else if(gui.selected_scene==1){
         testing_scene.idle_frame(environment);
     }
 }
@@ -159,6 +185,6 @@ void scene_structure::display_info()
 
 	std::cout << "\nSCENE INFO:" << std::endl;
 	std::cout << "-----------------------------------------------" << std::endl;
-	std::cout << "Display here the information you would like to appear at the start of the program on the command line (file scene.cpp, function display_info())." << std::endl;
+	std::cout << "Here is the main scene, initialize the test scenes to discover mechanics in details." << std::endl;
 	std::cout << "-----------------------------------------------\n" << std::endl;
 }

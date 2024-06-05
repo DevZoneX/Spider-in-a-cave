@@ -58,7 +58,7 @@ class SpiderController
         bool moveAllLegs = false;
 
         int selected_keyboard = 1;
-        std::string keyboards_control[KEYBOARD_LAYOUTS] = {"QWERTY","AZERTY","Keyboard Arrows"};
+        const char* const keyboards_control[KEYBOARD_LAYOUTS] = {"QWERTY","AZERTY","Keyboard Arrows"};
 
 
         float getAnimationDuration();
@@ -127,6 +127,8 @@ public:
     void mouse_click_event(environment_structure &environment);
     void action_keyboard(environment_structure &environment);
     void idle_frame(environment_structure &environment, collision_object* col);
+
+    void display_gui();
 };
 
 

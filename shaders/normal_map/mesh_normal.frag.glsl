@@ -143,8 +143,8 @@ vec3 computeColorWithLights(vec3 color_object,vec3 N,vec3 camera_position,vec3 f
 		float lightIntensity = 0;
 		if(lights[i].distance>=distance) {
 			lightIntensity = lights[i].intensity * (lights[i].distance-distance)/lights[i].distance;
-			float period = 0.6+0.15*floor(lights[i].position.x/7);
-			float delay = 0.3*lights[i].position.y/8;
+			float period = 1.0;
+			float delay = 0.5*lights[i].position.y/4;
 			float period_multiplier = 0.88;
 			period_multiplier += 0.12*cos(period*time+delay);
 			lightIntensity = lightIntensity * period_multiplier;

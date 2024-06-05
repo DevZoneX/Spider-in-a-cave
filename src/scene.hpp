@@ -20,8 +20,10 @@ struct gui_parameters {
 	
 	bool display_wireframe = false;
 
-    int selected_scene = 1;
-    int num_scenes = 2;
+	bool has_initialized_test_scene = false;
+
+    int selected_scene = 0;
+    int num_scenes = 1;
     const char* const listc[2] = {"Main Game","Test scene"};
 
     float spider_rotation_around_x = 0;
@@ -58,6 +60,8 @@ struct scene_structure : cgp::scene_inputs_generic {
     timer_event_periodic debug_timer;
 
     cave Cave;
+	organic_spider Spider;
+	SpiderController SpiderCtrl;
     // A helper structure used to enable hot update for the spider debug
 
 

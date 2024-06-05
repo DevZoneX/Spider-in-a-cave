@@ -430,14 +430,9 @@ void SpiderController::idle_frame(environment_structure &environment, collision_
     camera_control.idle_frame(environment.camera_view);
 }
 
-
-
-
-
-
-
-
-
+void SpiderController::display_gui(){
+    ImGui::ListBox("Keyboard settings",&params.selected_keyboard,params.keyboards_control,KEYBOARD_LAYOUTS,KEYBOARD_LAYOUTS);
+}
 
 // ___________________________________________________________  //
 // ___________________________________________________________  //
