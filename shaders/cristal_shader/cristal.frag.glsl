@@ -150,7 +150,7 @@ void main()
 	// Output color, with the alpha component
 	FragColor = vec4(color_shading, material.alpha * color_image_texture.a);
 
-	float period = 0.6+0.15*floor(fragment.position.x/7);
+	float period = 0.6+0.15*floor(fragment.position.x/7-0.083-fragment.position.z/50);
 	float delay = 0.3*fragment.position.y/8;
 	float period_multiplier = 0.88;
 	period_multiplier += 0.12*cos(period*time+delay);

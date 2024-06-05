@@ -42,7 +42,7 @@ class SpiderController
         float heightAcceleration = 30.5f;
         float heightFriction = 10.0f;
         float maxSpeed = 1.2f;
-        float maxAngularVelocity = 0.7f;
+        float maxAngularVelocity = 0.8f;
         float angularAcceleration = 1.5f;
         float arcFactor = 0.4f;
         float maxLegElevation = 1.2f;

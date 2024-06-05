@@ -70,7 +70,7 @@ public:
     partition_coordinates C;
     cave cave_obj;
 
-    cristal_rock_gold cristal_decorator;
+    cristal_large cristal_decorator;
     float deco_z_rot = 0;
 
 
