@@ -90,8 +90,8 @@ void test_scene::initialize(input_devices& _inputs, window_structure& window){
 
     cpart = new collision_partition({2,2,2},{0,0,0});
 
-    col_positions_scene3.key_positions[0] = {-0.061239,-0.551634,10.954695};
-    col_positions_scene3.key_positions[1] = col_positions_scene3.key_positions[0] + vec3({0.274187,-0.217219,1.663622});
+    col_positions_scene3.key_positions[0] = {0 ,1 ,0};
+    col_positions_scene3.key_positions[1] = col_positions_scene3.key_positions[0] + vec3({0.5 ,1 ,1});
 
     cristal_decorator.initialize();
 
