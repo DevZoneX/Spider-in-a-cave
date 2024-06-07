@@ -23,7 +23,7 @@ struct test_gui {
 
     int selected_scene = 5;
     int num_scenes = 6;
-    const char* const listc[6] = {"Spider", "Colisions", "Partition and collisions", "Terrain and collisions", "Spider Controller", "Cave Decorator"};
+    const char* const listc[6] = {"Spider", "Collisions", "Partition and collisions", "Terrain and collisions", "Spider Controller", "Cave Decorator"};
 
 
     float spider_rotation_around_x = 0;
